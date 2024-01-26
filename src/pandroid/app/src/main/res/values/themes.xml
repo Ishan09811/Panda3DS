@@ -27,6 +27,7 @@
     <style name="Theme.Pandroid" parent="Base.Theme.Pandroid">
         <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Pandroid.Custom" parent="Theme.Pandroid">
