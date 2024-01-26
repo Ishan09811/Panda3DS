@@ -64,6 +64,10 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
         }
     }
 
+    public void setSelectedItem(int index) {
+        onPreferenceClick(getPreference(index));
+    }
+
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         int index = findPreferenceIndex(preference);
