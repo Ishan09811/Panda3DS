@@ -12,8 +12,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceViewHolder;
 
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.utils.Constants;
