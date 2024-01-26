@@ -18,6 +18,8 @@ import androidx.preference.PreferenceCategory;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.utils.Constants;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 public class SingleSelectionPreferences extends PreferenceCategory implements Preference.OnPreferenceClickListener {
     private final Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
     private final Drawable doneDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
@@ -57,30 +59,56 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
     public void onAttached() {
         super.onAttached();
 
-        for (int i = 0; i < getPreferenceCount();i++) {
+        for (int i = 0; i < getPreferenceCount(); i++) {
             getPreference(i).setOnPreferenceClickListener(this);
         }
     }
 
-    public void setSelectedItem(int index) {
-        onPreferenceClick(getPreference(index));
-    }
-
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
-        int index = 0;
+        int index = findPreferenceIndex(preference);
 
+        if (index != -1) {
+            showMaterialDialog(index);
+        }
+
+        return true;
+    }
+
+    private int findPreferenceIndex(@NonNull Preference preference) {
+        for (int i = 0; i < getPreferenceCount(); i++) {
+            if (getPreference(i) == preference) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void showMaterialDialog(final int selectedIndex) {
+        final CharSequence[] entriesArray = new CharSequence[getPreferenceCount()];
+        for (int i = 0; i < getPreferenceCount(); i++) {
+            entriesArray[i] = getPreference(i).getTitle();
+        }
+
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(getTitle())
+                .setSingleChoiceItems(entriesArray, selectedIndex, (dialog, which) -> {
+                    updateSelectedPreference(which);
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void updateSelectedPreference(int selectedIndex) {
         for (int i = 0; i < getPreferenceCount(); i++) {
             Preference item = getPreference(i);
-            if (item == preference) {
-                index = i;
-                item.setIcon(R.drawable.ic_done);
+            if (i == selectedIndex) {
+                item.setIcon(doneDrawable);
             } else {
                 item.setIcon(transparent);
             }
         }
 
-        callChangeListener(index);
-        return false;
+        callChangeListener(selectedIndex);
     }
 }
