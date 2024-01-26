@@ -3,12 +3,9 @@
     <com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences
         app:key="theme"
         app:title="@string/theme"
-        app:iconSpaceReserved="false">
-
-        <Preference app:title="@string/theme_device"/>
-        <Preference app:title="@string/light"/>
-        <Preference app:title="@string/dark"/>
-        <Preference app:title="@string/black"/>
-
+        android:entries="@array/themes"
+        android:entryValues="@array/themes_val"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true" />
     </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
 </PreferenceScreen>
