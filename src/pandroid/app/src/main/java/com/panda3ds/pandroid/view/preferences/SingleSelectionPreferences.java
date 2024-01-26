@@ -70,7 +70,7 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
         if (titles != null && entryValues != null) {
             CharSequence selectedTitle = getTitle();
             if (selectedTitle != null) {
-                holder.itemView.setSummary(selectedTitle);
+                setSummary(selectedTitle);
             }
         }
     }
