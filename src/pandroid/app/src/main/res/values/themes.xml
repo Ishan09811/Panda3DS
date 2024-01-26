@@ -26,7 +26,6 @@
 
     <style name="Theme.Pandroid" parent="Base.Theme.Pandroid">
         <item name="android:enforceNavigationBarContrast">false</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
 
@@ -58,6 +57,7 @@
         <item name="android:textColorPrimary">@color/text_secondary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="Theme.Pandroid.Black" parent="Theme.Pandroid.Custom">
@@ -76,6 +76,7 @@
         <item name="android:textColorPrimary">@color/text_secondary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="Theme.Pandroid.Light" parent="Theme.Pandroid.Custom">
@@ -94,7 +95,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:textColorPrimary">@color/text_secondary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
 </resources>
