@@ -52,6 +52,7 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
             TypedArray color = getContext().obtainStyledAttributes(new int[]{
                     android.R.attr.textColorSecondary
             });
+            doneDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
             doneDrawable.setTint(color.getColor(0, Color.RED));
             color.recycle();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
