@@ -7,5 +7,4 @@
         android:entryValues="@array/themes_val"
         app:iconSpaceReserved="false"
         app:useSimpleSummaryProvider="true" />
-    </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
 </PreferenceScreen>
