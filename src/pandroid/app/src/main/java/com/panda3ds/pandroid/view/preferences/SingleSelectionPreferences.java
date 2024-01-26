@@ -24,12 +24,18 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
     private final Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
     private final Drawable doneDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
 
+    // New attributes for handling entries and entryValues
+    private CharSequence[] entries;
+    private CharSequence[] entryValues;
+
     public SingleSelectionPreferences(@NonNull Context context) {
         super(context);
+        init();
     }
 
     public SingleSelectionPreferences(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public SingleSelectionPreferences(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -40,11 +46,13 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    {
+    private void init() {
         try {
             TypedArray color = getContext().obtainStyledAttributes(new int[]{
                     android.R.attr.textColorSecondary
             });
+            entries = getEntries();
+            entryValues = getEntryValues();
             doneDrawable.setTint(color.getColor(0, Color.RED));
             color.recycle();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -52,6 +60,19 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
             }
         } catch (Exception e) {
             Log.e(Constants.LOG_TAG, "Error on obtain text color secondary: ", e);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+
+        // Set summary based on selected entry
+        if (entries != null && entryValues != null) {
+            CharSequence selectedEntry = getEntry();
+            if (selectedEntry != null) {
+                holder.setSummary(selectedEntry);
+            }
         }
     }
 
@@ -96,7 +117,7 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
 
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(getTitle())
-                .setSingleChoiceItems(entriesArray, selectedIndex, (dialog, which) -> {
+                .setSingleChoiceItems(entries, selectedIndex, (dialog, which) -> {
                     updateSelectedPreference(which);
                     dialog.dismiss();
                 })
@@ -114,5 +135,23 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
         }
 
         callChangeListener(selectedIndex);
+    }
+
+    // New method to get entries from the XML attribute
+    private CharSequence[] getEntries() {
+        if (this instanceof ListPreference) {
+            return ((ListPreference) this).getEntries();
+        } else {
+            return null; // Handle appropriately for other types of preferences
+        }
+    }
+
+    // New method to get entryValues from the XML attribute
+    private CharSequence[] getEntryValues() {
+        if (this instanceof ListPreference) {
+            return ((ListPreference) this).getEntryValues();
+        } else {
+            return null; // Handle appropriately for other types of preferences
+        }
     }
 }
