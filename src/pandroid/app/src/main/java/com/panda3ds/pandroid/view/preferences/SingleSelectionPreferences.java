@@ -12,22 +12,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.utils.Constants;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SingleSelectionPreferences extends PreferenceCategory implements Preference.OnPreferenceClickListener {
     private final Drawable transparent = new ColorDrawable(Color.TRANSPARENT);
     private final Drawable doneDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
 
-    // New attributes for handling entries and entryValues
-    private CharSequence[] entries;
+    private CharSequence[] titles;
     private CharSequence[] entryValues;
 
     public SingleSelectionPreferences(@NonNull Context context) {
@@ -50,11 +47,11 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
 
     private void init() {
         try {
+            titles = getTitles();
+            entryValues = getEntryValues();
             TypedArray color = getContext().obtainStyledAttributes(new int[]{
                     android.R.attr.textColorSecondary
             });
-            entries = getEntries();
-            entryValues = getEntryValues();
             doneDrawable.setTint(color.getColor(0, Color.RED));
             color.recycle();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -69,11 +66,11 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        // Set summary based on selected entry
-        if (entries != null && entryValues != null) {
-            CharSequence selectedEntry = getEntry();
-            if (selectedEntry != null) {
-                holder.setSummary(selectedEntry);
+        // Set summary based on selected title
+        if (titles != null && entryValues != null) {
+            CharSequence selectedTitle = getTitle();
+            if (selectedTitle != null) {
+                holder.itemView.setSummary(selectedTitle);
             }
         }
     }
@@ -112,14 +109,14 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
     }
 
     private void showMaterialDialog(final int selectedIndex) {
-        final CharSequence[] entriesArray = new CharSequence[getPreferenceCount()];
+        final CharSequence[] titlesArray = new CharSequence[getPreferenceCount()];
         for (int i = 0; i < getPreferenceCount(); i++) {
-            entriesArray[i] = getPreference(i).getTitle();
+            titlesArray[i] = getPreference(i).getTitle();
         }
 
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(getTitle())
-                .setSingleChoiceItems(entries, selectedIndex, (dialog, which) -> {
+                .setSingleChoiceItems(titles, selectedIndex, (dialog, which) -> {
                     updateSelectedPreference(which);
                     dialog.dismiss();
                 })
@@ -139,21 +136,19 @@ public class SingleSelectionPreferences extends PreferenceCategory implements Pr
         callChangeListener(selectedIndex);
     }
 
-    // New method to get entries from the XML attribute
-    private CharSequence[] getEntries() {
-        if (this instanceof ListPreference) {
-            return ((ListPreference) this).getEntries();
-        } else {
-            return null; // Handle appropriately for other types of preferences
+    private CharSequence[] getTitles() {
+        CharSequence[] titles = new CharSequence[getPreferenceCount()];
+        for (int i = 0; i < getPreferenceCount(); i++) {
+            titles[i] = getPreference(i).getTitle();
         }
+        return titles;
     }
 
-    // New method to get entryValues from the XML attribute
     private CharSequence[] getEntryValues() {
-        if (this instanceof ListPreference) {
-            return ((ListPreference) this).getEntryValues();
-        } else {
-            return null; // Handle appropriately for other types of preferences
+        CharSequence[] values = new CharSequence[getPreferenceCount()];
+        for (int i = 0; i < getPreferenceCount(); i++) {
+            values[i] = getPreference(i).getKey();
         }
+        return values;
     }
 }
