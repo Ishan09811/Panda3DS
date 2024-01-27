@@ -39,6 +39,7 @@ public class GameActivity extends BaseActivity {
 		}
 
 		PandaGlSurfaceView pandaSurface = new PandaGlSurfaceView(this, intent.getStringExtra(Constants.ACTIVITY_PARAMETER_PATH));
+		pandaSurface.setOnFpsUpdateListener(this);  // Set the listener
 		setContentView(R.layout.game_activity);
 
 		((FrameLayout) findViewById(R.id.panda_gl_frame))
@@ -57,6 +58,16 @@ public class GameActivity extends BaseActivity {
 
 		getSupportFragmentManager().beginTransaction().replace(R.id.drawer_fragment, drawerFragment).commitNow();
 	}
+
+	@Override
+        public void onFpsUpdate(double fps) {
+        runOnUiThread(() -> {
+            TextView fpsTextView = findViewById(R.id.fpsTextView);
+            if (fpsTextView != null) {
+                fpsTextView.setText(String.format(Locale.getDefault(), "FPS: %.2f", fps));
+            }
+        });
+    }
 
 	@Override
 	protected void onResume() {
