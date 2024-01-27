@@ -3,6 +3,8 @@ package com.panda3ds.pandroid.view;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Debug;
+import android.os.SystemClock;
+import android.opengl.GLES20
 
 import androidx.annotation.NonNull;
 import com.panda3ds.pandroid.math.Vector2;
@@ -15,6 +17,9 @@ public class PandaGlSurfaceView extends GLSurfaceView implements TouchScreenNode
 	private int width;
 	private int height;
 	private OnFpsUpdateListener fpsUpdateListener;
+	private int frameCount = 0;
+        private long lastTimeMillis = SystemClock.elapsedRealtime();
+	
 
 	public PandaGlSurfaceView(Context context, String romPath) {
 		super(context);
@@ -50,7 +55,7 @@ public class PandaGlSurfaceView extends GLSurfaceView implements TouchScreenNode
 	}
 
 	@Override
-        public void onDrawFrame(GL10 gl) {
+        public void onDrawFrame(GLES20 gl) {
         super.onDrawFrame(gl);
 
         // Increment frameCount for FPS calculation
