@@ -14,6 +14,7 @@ public class PandaGlSurfaceView extends GLSurfaceView implements TouchScreenNode
 	final PandaGlRenderer renderer;
 	private int width;
 	private int height;
+	private OnFpsUpdateListener fpsUpdateListener;
 
 	public PandaGlSurfaceView(Context context, String romPath) {
 		super(context);
@@ -44,4 +45,30 @@ public class PandaGlSurfaceView extends GLSurfaceView implements TouchScreenNode
 	public void onTouch(TouchEvent event) {
 		onTouchScreenPress(renderer, event);
 	}
+	public void setOnFpsUpdateListener(OnFpsUpdateListener listener) {
+        this.fpsUpdateListener = listener;
+	}
+
+	@Override
+        public void onDrawFrame(GL10 gl) {
+        super.onDrawFrame(gl);
+
+        // Increment frameCount for FPS calculation
+        frameCount++;
+
+        // Calculate FPS every second
+        long currentTimeMillis = SystemClock.elapsedRealtime();
+        long elapsedTimeMillis = currentTimeMillis - lastTimeMillis;
+        if (elapsedTimeMillis >= 1000) {  // Check if one second has passed
+            double fps = (frameCount * 1000.0) / elapsedTimeMillis;
+
+            if (fpsUpdateListener != null) {
+                fpsUpdateListener.onFpsUpdate(fps);  // Notify the listener with the calculated FPS
+            }
+
+            // Reset counters for the next second
+            frameCount = 0;
+            lastTimeMillis = currentTimeMillis;
+        }
+    }
 }
