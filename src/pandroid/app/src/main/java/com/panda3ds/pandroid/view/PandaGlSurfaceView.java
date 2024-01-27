@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Debug;
 import android.os.SystemClock;
-import android.opengl.GLES20
+import android.opengl.GLES20;
 
 import androidx.annotation.NonNull;
 import com.panda3ds.pandroid.math.Vector2;
