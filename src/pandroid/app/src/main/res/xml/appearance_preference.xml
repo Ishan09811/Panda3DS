@@ -10,5 +10,14 @@
         <Preference app:title="@string/dark"/>
         <Preference app:title="@string/black"/>
 
+     <com.panda3ds.pandroid.view.preferences.IntegerListPreference
+        android:key="game_layout"
+        android:title="@string/game_layout"
+        android:iconSpaceReserved="false"
+        app:entries="@array/game_layout_entries"
+        app:entryValues="@array/game_layout_entries_val"
+        app:useSimpleSummaryProvider="true"
+        app:refreshRequired="true" />
+
     </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
 </PreferenceScreen>
