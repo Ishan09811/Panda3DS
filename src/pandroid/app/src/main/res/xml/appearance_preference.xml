@@ -9,6 +9,8 @@
         <Preference app:title="@string/light"/>
         <Preference app:title="@string/dark"/>
         <Preference app:title="@string/black"/>
+        
+    </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
 
      <com.panda3ds.pandroid.view.preferences.IntegerListPreference
         android:key="game_layout"
@@ -18,6 +20,5 @@
         app:entryValues="@array/game_layout_entries_val"
         app:useSimpleSummaryProvider="true"
         app:refreshRequired="true" />
-
-    </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
+    
 </PreferenceScreen>
