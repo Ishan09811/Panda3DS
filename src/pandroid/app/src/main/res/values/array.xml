@@ -1,0 +1,14 @@
+<resources>
+            <string-array name="game_layout_entries">
+                <item>List</item>
+                <item>Grid</item>
+                <item>List Compact</item>
+                <item>Grip Compact</item>
+            </string-array>
+            <integer-array name="game_layout_entries_val">
+                <item>0</item>
+                <item>1</item>
+                <item>2</item>
+                <item>3</item>
+            </integer-array>
+        </resources>
