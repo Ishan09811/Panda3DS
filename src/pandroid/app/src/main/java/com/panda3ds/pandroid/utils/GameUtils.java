@@ -66,34 +66,36 @@ public class GameUtils {
         parser.save(data);
     }
 
-    public static void setGameIcon(String id, Bitmap icon) {
-        try {
-            String appPath = FileUtils.getPrivatePath();
-            FileUtils.createDir(appPath, "cache_icons");
-            FileUtils.createFile(appPath + "/cache_icons/", id + ".png");
+    public static void setGameIcon(Context context, String id, Bitmap icon) {
+    try {
+        String iconsFolderPath = context.getExternalFilesDir(null) + "/icons/";
+        FileUtils.createDir(iconsFolderPath);
 
-            OutputStream output = FileUtils.getOutputStream(appPath + "/cache_icons/" + id + ".png");
-            icon.compress(Bitmap.CompressFormat.PNG, 100, output);
-            output.close();
-        } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, "Error on save game icon: ", e);
-        }
-    }
+        String iconPath = iconsFolderPath + id + ".png";
 
-    public static Bitmap loadGameIcon(String id) {
-        try {
-            String path = FileUtils.getPrivatePath() + "/cache_icons/" + id + ".png";
-            if (FileUtils.exists(path)) {
-                InputStream stream = FileUtils.getInputStream(path);
-                Bitmap image = BitmapFactory.decodeStream(stream);
-                stream.close();
-                return image;
-            }
-        } catch (Exception e) {
-            Log.e(Constants.LOG_TAG, "Error on load game icon: ", e);
-        }
-        return DEFAULT_ICON;
+        OutputStream output = FileUtils.getOutputStream(iconPath);
+        icon.compress(Bitmap.CompressFormat.PNG, 100, output);
+        output.close();
+    } catch (Exception e) {
+        Log.e(Constants.LOG_TAG, "Error on save game icon: ", e);
     }
+}
+
+public static Bitmap loadGameIcon(Context context, String id) {
+    try {
+        String iconPath = context.getExternalFilesDir(null) + "/icons/" + id + ".png";
+        if (FileUtils.exists(iconPath)) {
+            InputStream stream = FileUtils.getInputStream(iconPath);
+            Bitmap image = BitmapFactory.decodeStream(stream);
+            stream.close();
+            return image;
+        }
+    } catch (Exception e) {
+        Log.e(Constants.LOG_TAG, "Error on load game icon: ", e);
+    }
+    return DEFAULT_ICON;
+}
+    
 
     private static class DataModel {
         public final List<GameMetadata> games = new ArrayList<>();
