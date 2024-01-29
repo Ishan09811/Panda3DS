@@ -26,14 +26,15 @@ public class GameMetadata {
     return context;
     }
 
-    private GameMetadata(String id, String romPath, String title, String publisher, Bitmap icon, GameRegion[] regions) {
+    private GameMetadata(String id, String romPath, String title, String publisher, Bitmap icon, GameRegion[] regions, Context context) {
         this.id = id;
         this.title = title;
         this.publisher = publisher;
         this.romPath = romPath;
         this.regions = regions;
+        this.context = context;
         if (icon != null) {
-            GameUtils.setGameIcon(getContext(), id, icon);
+            GameUtils.setGameIcon(context, id, icon);
         }
     }
 
@@ -63,7 +64,7 @@ public class GameMetadata {
 
     public Bitmap getIcon() {
         if (icon == null) {
-            icon = GameUtils.loadGameIcon(getContext(), id);
+            icon = GameUtils.loadGameIcon(context, id);
         }
         return icon;
     }
