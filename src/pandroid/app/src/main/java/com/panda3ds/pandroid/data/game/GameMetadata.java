@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import com.panda3ds.pandroid.data.SMDH;
 import com.panda3ds.pandroid.utils.Constants;
 import com.panda3ds.pandroid.utils.GameUtils;
+import android.content.Context;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -18,7 +19,12 @@ public class GameMetadata {
     private final String title;
     private final String publisher;
     private final GameRegion[] regions;
+    private final Context context;
     private transient Bitmap icon;
+
+    private Context getContext() {
+    return context;
+    }
 
     private GameMetadata(String id, String romPath, String title, String publisher, Bitmap icon, GameRegion[] regions) {
         this.id = id;
@@ -27,7 +33,7 @@ public class GameMetadata {
         this.romPath = romPath;
         this.regions = regions;
         if (icon != null) {
-            GameUtils.setGameIcon(id, icon);
+            GameUtils.setGameIcon(getContext(), id, icon);
         }
     }
 
@@ -57,7 +63,7 @@ public class GameMetadata {
 
     public Bitmap getIcon() {
         if (icon == null) {
-            icon = GameUtils.loadGameIcon(id);
+            icon = GameUtils.loadGameIcon(getContext(), id);
         }
         return icon;
     }
