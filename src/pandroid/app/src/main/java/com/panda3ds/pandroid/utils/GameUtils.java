@@ -69,7 +69,7 @@ public class GameUtils {
     public static void setGameIcon(Context context, String id, Bitmap icon) {
     try {
         String iconsFolderPath = context.getExternalFilesDir(null) + "/icons/";
-        FileUtils.createDir(iconsFolderPath);
+        FileUtils.createDir(context, iconsFolderPath);
 
         String iconPath = iconsFolderPath + id + ".png";
 
@@ -95,6 +95,7 @@ public static Bitmap loadGameIcon(Context context, String id) {
     }
     return DEFAULT_ICON;
 }
+
     
 
     private static class DataModel {
