@@ -13,16 +13,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_rom"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:layout_gravity="end|bottom"
-        app:srcCompat="@drawable/ic_add"
+        app:icon="@drawable/ic_add"
         android:tint="?colorOnPrimary"
         app:rippleColor="?colorOnSurfaceVariant"
-        app:backgroundTint="?colorPrimary"
-        app:maxImageSize="30dp" 
-        app:useCompatPadding="false"/>
+        app:backgroundTint="?colorPrimary"/>
 
 </FrameLayout>
