@@ -21,6 +21,8 @@
         app:srcCompat="@drawable/ic_add"
         android:tint="?colorOnPrimary"
         app:rippleColor="?colorOnSurfaceVariant"
-        app:backgroundTint="?colorPrimary"/>
+        app:backgroundTint="?colorPrimary"
+        app:maxImageSize="30dp" 
+        app:useCompatPadding="false"/>
 
 </FrameLayout>
