@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="end|bottom"
-        app:icon="@drawable/ic_add"
+        android:src="@drawable/ic_add"
+        android:gravity="center"
         app:rippleColor="?colorOnSurfaceVariant"
         app:backgroundTint="?colorPrimary"
         tools:ignore="PrivateResource"/>
