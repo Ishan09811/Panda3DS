@@ -17,8 +17,6 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:hint="@string/search"
-            android:paddingEnd="10dp"
-            android:paddingStart="50dp"
             android:textSize="16sp"
             android:background="@drawable/search_bar_background"
             android:backgroundTint="?colorSurfaceVariant" />
