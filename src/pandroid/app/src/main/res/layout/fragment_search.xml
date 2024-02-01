@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?colorSurfaceVariant">
+    android:orientation="vertical">
 
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="20dp"
+        android:background="?colorSurfaceVariant">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_bar"
