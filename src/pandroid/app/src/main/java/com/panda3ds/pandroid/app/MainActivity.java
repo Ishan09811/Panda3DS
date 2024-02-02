@@ -52,21 +52,28 @@ public class MainActivity extends BaseActivity implements NavigationBarView.OnIt
 	}
 
 	@Override
-	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-		int id = item.getItemId();
-		FragmentManager manager = getSupportFragmentManager();
-		Fragment fragment;
-		if (id == R.id.games) {
-			fragment = gamesFragment;
-		} else if (id == R.id.search) {
-			fragment = searchFragment;
-		} else if (id == R.id.settings) {
-			fragment = settingsFragment;
-		} else {
-			return false;
-		}
+public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    int id = item.getItemId();
+    FragmentManager manager = getSupportFragmentManager();
+    Fragment fragment;
+    if (id == R.id.games) {
+        fragment = gamesFragment;
+    } else if (id == R.id.search) {
+        fragment = searchFragment;
+    } else if (id == R.id.settings) {
+        fragment = settingsFragment;
+    } else {
+        return false;
+    }
 
-		manager.beginTransaction().replace(R.id.fragment_container, fragment).commitNow();
-		return true;
-	}
+    // Begin a FragmentTransaction and set custom animations for entering and exiting fragments.
+    FragmentTransaction transaction = manager.beginTransaction();
+    transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+
+    // Replace the current fragment with the selected one.
+    transaction.replace(R.id.fragment_container, fragment).commit();
+
+    return true;
+ }
+	
 }
