@@ -70,6 +70,8 @@ public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     // Begin a FragmentTransaction and set custom animations for entering and exiting fragments.
     FragmentTransaction transaction = manager.beginTransaction();
     transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+    transaction.setTransitionDuration(300);
 
     // Replace the current fragment with the selected one.
     transaction.replace(R.id.fragment_container, fragment).commit();
