@@ -71,7 +71,15 @@ public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     FragmentTransaction transaction = manager.beginTransaction();
     transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-    transaction.setTransitionDuration(300);
+
+    // Set the animation duration in milliseconds using reflection.
+    try {
+        Field mAnimationDuration = FragmentTransaction.class.getDeclaredField("mAnimationDuration");
+        mAnimationDuration.setAccessible(true);
+        mAnimationDuration.setInt(transaction, 300);  // Set the animation duration in milliseconds.
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+        e.printStackTrace();
+    }
 
     // Replace the current fragment with the selected one.
     transaction.replace(R.id.fragment_container, fragment).commit();
