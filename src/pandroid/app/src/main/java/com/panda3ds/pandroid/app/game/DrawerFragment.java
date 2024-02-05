@@ -91,6 +91,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
     } else {
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
+}
 
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {}
