@@ -100,6 +100,4 @@
 
         </LinearLayout>
 
-    </ScrollView>
-
 </androidx.drawerlayout.widget.DrawerLayout>
