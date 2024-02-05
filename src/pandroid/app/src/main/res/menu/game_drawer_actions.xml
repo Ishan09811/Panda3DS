@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/change_orientation"
-        android:icon="@drawable/ic_shortcut"
+        android:icon="@drawable/ic_rotate_screen"
         android:title="@string/change_orientation"/>
     <item
         android:id="@+id/resume"
