@@ -20,6 +20,7 @@ import com.panda3ds.pandroid.app.editor.CodeEditorActivity;
 import com.panda3ds.pandroid.app.main.GamesFragment;
 import com.panda3ds.pandroid.app.main.SearchFragment;
 import com.panda3ds.pandroid.app.main.SettingsFragment;
+import java.lang.reflect.Field;
 
 import java.io.File;
 
