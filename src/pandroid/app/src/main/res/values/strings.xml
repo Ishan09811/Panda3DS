@@ -28,7 +28,7 @@
     <string name="actions">Actions</string>
     <string name="exit">Exit</string>
     <string name="resume">Resume</string>
-    <string name="change_orientation">Change Screen Orientation</string>
+    <string name="change_orientation">Rotate</string>
     <string name="saved">Saved</string>
     <string name="create_profile">Create profile</string>
     <string name="input">Input</string>
