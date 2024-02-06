@@ -49,7 +49,6 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         ((AppCompatTextView)view.findViewById(R.id.game_publisher)).setText(game.getPublisher());
 
         ((NavigationView)view.findViewById(R.id.action_navigation)).setNavigationItemSelectedListener(this);
-        ((NavigationView)view.findViewById(R.id.others_navigation)).setNavigationItemSelectedListener(this);
     }
 
     @Override
