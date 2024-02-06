@@ -1,5 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    android:divider="@null">
+    android:divider="@null"
+    android:dividerHeight="0dp">
     <!-- First category: Actions -->
     <group android:id="@+id/group_actions">
         <!-- Header for the Actions category -->
