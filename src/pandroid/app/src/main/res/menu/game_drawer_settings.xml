@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:divider="@null">
     <!-- First category: Actions -->
     <group android:id="@+id/group_actions">
         <!-- Header for the Actions category -->
@@ -6,7 +7,8 @@
             android:id="@+id/header_actions"
             android:title="Actions"
             android:checkable="false"
-            android:enabled="false" />
+            android:enabled="false"
+            android:titleTextAppearance="@style/TextAppearanceGameDrawerSubTitle"/>
 
         <item
             android:id="@+id/resume"
@@ -24,7 +26,8 @@
                 android:id="@+id/header_others"
                 android:title="Others"
                 android:checkable="false"
-                android:enabled="false" />
+                android:enabled="false" 
+                android:titleTextAppearance="@style/TextAppearanceGameDrawerSubTitle"/>
 
             <item
                 android:id="@+id/change_orientation"
