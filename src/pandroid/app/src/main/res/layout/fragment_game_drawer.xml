@@ -89,7 +89,8 @@
             android:layout_height="wrap_content"
             app:menu="@menu/game_drawer_settings"
             android:background="?colorSurface"
-            android:theme="@style/Widget.App.NavigationView"/>
+            android:theme="@style/Widget.App.NavigationView"
+            app:subheaderTextAppearance="@style/TextAppearanceGameDrawerSubTitle"/>
 
     </LinearLayout>
 
