@@ -1,16 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:divider="@null"
     android:dividerHeight="0dp">
-    <!-- First category: Actions -->
-    <group android:id="@+id/group_actions">
-        <!-- Header for the Actions category -->
-        <item
-            android:id="@+id/header_actions"
-            android:title="Actions"
-            android:checkable="false"
-            android:enabled="false"
-            android:titleTextAppearance="@style/TextAppearanceGameDrawerSubTitle"/>
-
+    <item
+        android:id="@+id/header_actions"
+        android:title="Actions">
+      <menu>
+          
         <item
             android:id="@+id/resume"
             android:icon="@drawable/ic_shortcut"
@@ -20,15 +15,12 @@
             android:icon="@drawable/ic_exit"
             android:title="@string/exit"/>
 
-        <!-- Second category: Others -->
-        <group android:id="@+id/group_others">
-            <!-- Header for the Others category -->
-            <item
-                android:id="@+id/header_others"
-                android:title="Others"
-                android:checkable="false"
-                android:enabled="false" 
-                android:titleTextAppearance="@style/TextAppearanceGameDrawerSubTitle"/>
+        </menu>
+     </item>
+     <item
+         android:id="@+id/header_others"
+         android:title="Others">
+      <menu>
 
             <item
                 android:id="@+id/change_orientation"
@@ -38,6 +30,6 @@
                 android:id="@+id/lua_script"
                 android:icon="@drawable/ic_code"
                 android:title="@string/lua_script" />
-        </group>
-    </group>
+     </menu>
+  </item>
 </menu>
