@@ -9,7 +9,7 @@
             android:enabled="false" />
 
         <item
-            android:id="@+id/action_resume"
+            android:id="@+id/resume"
             android:icon="@drawable/ic_shortcut"
             android:title="@string/resume" />
         <item
@@ -27,11 +27,11 @@
                 android:enabled="false" />
 
             <item
-                android:id="@+id/other_change_orientation"
+                android:id="@+id/change_orientation"
                 android:icon="@drawable/ic_rotate_screen"
                 android:title="Rotate" />
             <item
-                android:id="@+id/other_lua_script"
+                android:id="@+id/lua_script"
                 android:icon="@drawable/ic_code"
                 android:title="@string/lua_script" />
         </group>
