@@ -8,12 +8,14 @@
             android:checkable="false"
             android:enabled="false" />
 
-        <!-- Items within the Actions category -->
         <item
             android:id="@+id/action_resume"
-            android:icon="@drawable/ic_resume"
-            android:title="Resume" />
-        <!-- Add more items as needed for Actions -->
+            android:icon="@drawable/ic_shortcut"
+            android:title="@string/resume" />
+        <item
+            android:id="@+id/exit"
+            android:icon="@drawable/ic_exit"
+            android:title="@string/exit"/>
 
         <!-- Second category: Others -->
         <group android:id="@+id/group_others">
@@ -24,16 +26,14 @@
                 android:checkable="false"
                 android:enabled="false" />
 
-            <!-- Items within the Others category -->
             <item
                 android:id="@+id/other_change_orientation"
                 android:icon="@drawable/ic_rotate_screen"
-                android:title="Change Orientation" />
+                android:title="Rotate" />
             <item
                 android:id="@+id/other_lua_script"
                 android:icon="@drawable/ic_code"
-                android:title="Lua Script" />
-            <!-- Add more items as needed for Others -->
+                android:title="@string/lua_script" />
         </group>
     </group>
 </menu>
