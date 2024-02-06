@@ -7,11 +7,13 @@
     android:layout_height="match_parent"
     android:background="?colorSurface">
 
+    <!-- Main content layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Game related content -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,47 +71,40 @@
 
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Drawer content layout -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:orientation="vertical"
+        android:gravity="start"
+        android:paddingTop="?attr/actionBarSize">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/actions_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/actions"
-            style="@style/TextAppearanceGameDrawerSubTitle"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            style="@style/TextAppearanceGameDrawerSubTitle"/>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/action_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:menu="@menu/game_drawer_actions"
-            android:background="?colorSurface"
-            app:layout_constraintTop_toBottomOf="@id/actions_text_view"/>
+            android:background="?colorSurface"/>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/others_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/others"
-            style="@style/TextAppearanceGameDrawerSubTitle"
-            app:layout_constraintTop_toBottomOf="@id/action_navigation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            style="@style/TextAppearanceGameDrawerSubTitle"/>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/others_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:menu="@menu/game_drawer_others"
-            android:background="?colorSurface"
-            app:layout_constraintTop_toBottomOf="@id/others_text_view"/>
+            android:background="?colorSurface"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
