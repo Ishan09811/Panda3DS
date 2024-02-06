@@ -30,6 +30,10 @@
     <item name="android:windowTranslucentNavigation">false</item>
     <item name="android:statusBarColor">?colorSurfaceVariant</item>
 </style>
+    
+<style name="Widget.App.NavigationView" parent="Widget.Material3.NavigationView">
+    <item name="android:listDivider">@android:color/transparent</item>
+</style>
 
 
     <style name="Theme.Pandroid.Custom" parent="Theme.Pandroid">
