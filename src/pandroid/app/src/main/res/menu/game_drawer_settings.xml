@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- First category: Actions -->
+    <group android:id="@+id/group_actions">
+        <!-- Header for the Actions category -->
+        <item
+            android:id="@+id/header_actions"
+            android:title="Actions"
+            android:checkable="false"
+            android:enabled="false" />
+
+        <!-- Items within the Actions category -->
+        <item
+            android:id="@+id/action_resume"
+            android:icon="@drawable/ic_resume"
+            android:title="Resume" />
+        <!-- Add more items as needed for Actions -->
+
+        <!-- Second category: Others -->
+        <group android:id="@+id/group_others">
+            <!-- Header for the Others category -->
+            <item
+                android:id="@+id/header_others"
+                android:title="Others"
+                android:checkable="false"
+                android:enabled="false" />
+
+            <!-- Items within the Others category -->
+            <item
+                android:id="@+id/other_change_orientation"
+                android:icon="@drawable/ic_rotate_screen"
+                android:title="Change Orientation" />
+            <item
+                android:id="@+id/other_lua_script"
+                android:icon="@drawable/ic_code"
+                android:title="Lua Script" />
+            <!-- Add more items as needed for Others -->
+        </group>
+    </group>
+</menu>
