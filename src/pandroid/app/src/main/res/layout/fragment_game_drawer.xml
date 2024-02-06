@@ -88,7 +88,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:menu="@menu/game_drawer_settings"
-            android:background="?colorSurface"/>
+            android:background="?colorSurface"
+            android:theme="@style/Widget.App.NavigationView"/>
 
     </LinearLayout>
 
