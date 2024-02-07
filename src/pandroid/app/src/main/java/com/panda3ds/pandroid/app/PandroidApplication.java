@@ -29,10 +29,12 @@ public class PandroidApplication extends Application {
 		InputMap.initialize();
 		AlberDriver.Setup();
 
+               if (GlobalConfig.get(GlobalConfig.KEY_APP_THEME) == GlobalConfig.THEME_DYNAMIC) {
 		DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder()
                   .build();
 
                 DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
+	       }       
 
 
 		if (GlobalConfig.get(GlobalConfig.KEY_LOGGER_SERVICE)) {
