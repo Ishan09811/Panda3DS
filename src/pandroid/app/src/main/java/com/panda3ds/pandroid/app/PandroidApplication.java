@@ -12,6 +12,8 @@ import com.panda3ds.pandroid.app.services.LoggerService;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
 import com.panda3ds.pandroid.input.InputMap;
 import com.panda3ds.pandroid.utils.GameUtils;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 
 
 public class PandroidApplication extends Application {
@@ -26,6 +28,12 @@ public class PandroidApplication extends Application {
 		GameUtils.initialize();
 		InputMap.initialize();
 		AlberDriver.Setup();
+
+		DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder()
+                  .build();
+
+                DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
+
 
 		if (GlobalConfig.get(GlobalConfig.KEY_LOGGER_SERVICE)) {
 			startService(new Intent(this, LoggerService.class));
