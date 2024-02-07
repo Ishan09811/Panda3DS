@@ -9,8 +9,8 @@ import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
 import com.panda3ds.pandroid.input.InputMap;
-import com.google.android.material.color.DynamicColors
-import com.google.android.material.color.DynamicColorsOptions
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 import com.panda3ds.pandroid.utils.GameUtils;
 
 
