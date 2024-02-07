@@ -9,6 +9,8 @@ import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
 import com.panda3ds.pandroid.input.InputMap;
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import com.panda3ds.pandroid.utils.GameUtils;
 
 
@@ -24,6 +26,11 @@ public class PandroidApplication extends Application {
 		GameUtils.initialize();
 		InputMap.initialize();
 		AlberDriver.Setup();
+
+	   DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder()
+               .build();
+
+           DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
 	}
 
 	public static int getThemeId() {
