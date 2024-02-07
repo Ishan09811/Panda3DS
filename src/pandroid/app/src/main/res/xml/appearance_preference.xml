@@ -9,6 +9,7 @@
         <Preference app:title="@string/light"/>
         <Preference app:title="@string/dark"/>
         <Preference app:title="@string/black"/>
+        <Preference app:title="Dynamic"/>
 
     </com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences>
 </PreferenceScreen>
