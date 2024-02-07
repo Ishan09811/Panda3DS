@@ -1,3 +1,5 @@
+import java.lang.ProcessBuilder.Redirect
+
 plugins {
     id("com.android.application")
 }
@@ -66,16 +68,20 @@ fun getGitVersionName(): String {
     var versionName = "0.0.0"
 
     try {
-        // Check if HEAD is a tag
-        val process = "git describe --exact-match".execute([], project.rootDir)
+        val process = ProcessBuilder("git", "describe", "--exact-match")
+            .directory(project.rootDir)
+            .redirectOutput(Redirect.PIPE)
+            .start()
         val isTag = process.waitFor() == 0
 
-        // Use the tag name as the version name
-        val tag = "git describe --abbrev=0".execute([], project.rootDir).text.trim()
+        val tagProcess = ProcessBuilder("git", "describe", "--abbrev=0")
+            .directory(project.rootDir)
+            .redirectOutput(Redirect.PIPE)
+            .start()
+        val tag = tagProcess.inputStream.bufferedReader().readText().trim()
         if (!tag.isEmpty())
             versionName = tag
 
-        // If HEAD is not a tag, append the branch name and the short commit hash
         if (!isTag)
             versionName += "-" + getGitBranch() + "-" + getGitShortHash()
     } catch (e: Exception) {
@@ -93,10 +99,12 @@ fun getGitVersionCode(): Int {
     var versionCode = 1
 
     try {
-        versionCode = maxOf(
-            "git rev-list --first-parent --count --tags".execute([], project.rootDir).text.toInteger(),
-            versionCode
-        )
+        val process = ProcessBuilder("git", "rev-list", "--first-parent", "--count", "--tags")
+            .directory(project.rootDir)
+            .redirectOutput(Redirect.PIPE)
+            .start()
+        val output = process.inputStream.bufferedReader().readText().toInt()
+        versionCode = maxOf(output, versionCode)
     } catch (e: Exception) {
         logger.error("$e: defaulting to dummy version code $versionCode")
     }
@@ -112,7 +120,11 @@ fun getGitShortHash(): String {
     var gitHash = "0"
 
     try {
-        gitHash = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
+        val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+            .directory(project.rootDir)
+            .redirectOutput(Redirect.PIPE)
+            .start()
+        gitHash = process.inputStream.bufferedReader().readText().trim()
     } catch (e: Exception) {
         logger.error("$e: defaulting to dummy build hash $gitHash")
     }
@@ -127,7 +139,11 @@ fun getGitBranch(): String {
     var branch = "unk"
 
     try {
-        branch = "git rev-parse --abbrev-ref HEAD".execute([], project.rootDir).text.trim()
+        val process = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
+            .directory(project.rootDir)
+            .redirectOutput(Redirect.PIPE)
+            .start()
+        branch = process.inputStream.bufferedReader().readText().trim()
     } catch (e: Exception) {
         logger.error("$e: defaulting to dummy branch $branch")
     }
