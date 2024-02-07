@@ -28,7 +28,8 @@ public class PandroidApplication extends Application {
 		GameUtils.initialize();
 		InputMap.initialize();
 		AlberDriver.Setup();
-
+		
+               int theme = GlobalConfig.get(GlobalConfig.KEY_APP_THEME);
                if (GlobalConfig.get(GlobalConfig.KEY_APP_THEME) == GlobalConfig.THEME_DYNAMIC) {
 		DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder()
                   .build();
