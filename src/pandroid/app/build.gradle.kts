@@ -68,22 +68,15 @@ fun getGitVersionName(): String {
     var versionName = "0.0.0"
 
     try {
-        val process = ProcessBuilder("git", "describe", "--exact-match")
+        val process = ProcessBuilder("git", "describe", "--abbrev=0")
             .directory(project.rootDir)
             .redirectOutput(Redirect.PIPE)
             .start()
-        val isTag = process.waitFor() == 0
-
-        val tagProcess = ProcessBuilder("git", "describe", "--abbrev=0")
-            .directory(project.rootDir)
-            .redirectOutput(Redirect.PIPE)
-            .start()
-        val tag = tagProcess.inputStream.bufferedReader().readText().trim()
+        val tag = process.inputStream.bufferedReader().readText().trim()
         if (!tag.isEmpty())
             versionName = tag
 
-        if (!isTag)
-            versionName += "-" + getGitBranch() + "-" + getGitShortHash()
+        versionName += "-" + getGitBranch() + "-" + getGitShortHash()
     } catch (e: Exception) {
         logger.quiet("$e: defaulting to dummy version number $versionName")
     }
@@ -91,6 +84,7 @@ fun getGitVersionName(): String {
     logger.quiet("Version name: $versionName")
     return versionName
 }
+
 
 /**
  * Returns the number of commits until the last tag
