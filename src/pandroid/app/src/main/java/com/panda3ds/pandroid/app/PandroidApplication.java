@@ -28,7 +28,6 @@ public class PandroidApplication extends Application {
 		AlberDriver.Setup();
 
 	   DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder()
-	       .setApplyToStatusBar(true)
                .build();
 
            DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
