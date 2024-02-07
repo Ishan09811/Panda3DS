@@ -46,6 +46,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
+
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
@@ -61,57 +62,59 @@ dependencies {
  * If HEAD is not a tag, the tag name, the branch name and the short commit hash are used
  * e.g. `1.0.0-master-ab00cd11`
  */
-def getGitVersionName() {
-    def versionName = '0.0.0'
+fun getGitVersionName(): String {
+    var versionName = "0.0.0"
 
     try {
         // Check if HEAD is a tag
-        def process = 'git describe --exact-match'.execute([], project.rootDir)
-        def isTag = process.waitFor() == 0
+        val process = "git describe --exact-match".execute([], project.rootDir)
+        val isTag = process.waitFor() == 0
 
         // Use the tag name as the version name
-        def tag = 'git describe --abbrev=0'.execute([], project.rootDir).text.trim()
+        val tag = "git describe --abbrev=0".execute([], project.rootDir).text.trim()
         if (!tag.isEmpty())
             versionName = tag
 
         // If HEAD is not a tag, append the branch name and the short commit hash
         if (!isTag)
-            versionName += '-' + getGitBranch() + '-' + getGitShortHash()
-    } catch (Exception e) {
-        logger.quiet(e + ': defaulting to dummy version number ' + versionName)
+            versionName += "-" + getGitBranch() + "-" + getGitShortHash()
+    } catch (e: Exception) {
+        logger.quiet("$e: defaulting to dummy version number $versionName")
     }
 
-    logger.quiet('Version name: ' + versionName)
+    logger.quiet("Version name: $versionName")
     return versionName
 }
 
 /**
  * Returns the number of commits until the last tag
  */
-def getGitVersionCode() {
-    def versionCode = 1
+fun getGitVersionCode(): Int {
+    var versionCode = 1
 
     try {
-        versionCode = Integer.max('git rev-list --first-parent --count --tags'.execute([], project.rootDir).text
-                .toInteger(), versionCode)
-    } catch (Exception e) {
-        logger.error(e + ': defaulting to dummy version code ' + versionCode)
+        versionCode = maxOf(
+            "git rev-list --first-parent --count --tags".execute([], project.rootDir).text.toInteger(),
+            versionCode
+        )
+    } catch (e: Exception) {
+        logger.error("$e: defaulting to dummy version code $versionCode")
     }
 
-    logger.quiet('Version code: ' + versionCode)
+    logger.quiet("Version code: $versionCode")
     return versionCode
 }
 
 /**
  * Returns the short commit hash
  */
-def getGitShortHash() {
-    def gitHash = '0'
+fun getGitShortHash(): String {
+    var gitHash = "0"
 
     try {
-        gitHash = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
-    } catch (Exception e) {
-        logger.error(e + ': defaulting to dummy build hash ' + gitHash)
+        gitHash = "git rev-parse --short HEAD".execute([], project.rootDir).text.trim()
+    } catch (e: Exception) {
+        logger.error("$e: defaulting to dummy build hash $gitHash")
     }
 
     return gitHash
@@ -120,13 +123,13 @@ def getGitShortHash() {
 /**
  * Returns the current branch name
  */
-def getGitBranch() {
-    def branch = 'unk'
+fun getGitBranch(): String {
+    var branch = "unk"
 
     try {
-        branch = 'git rev-parse --abbrev-ref HEAD'.execute([], project.rootDir).text.trim()
-    } catch (Exception e) {
-        logger.error(e + ': defaulting to dummy branch ' + branch)
+        branch = "git rev-parse --abbrev-ref HEAD".execute([], project.rootDir).text.trim()
+    } catch (e: Exception) {
+        logger.error("$e: defaulting to dummy branch $branch")
     }
 
     return branch
