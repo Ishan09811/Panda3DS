@@ -43,10 +43,10 @@ class ItemHolder extends RecyclerView.ViewHolder {
         TextView gameTitleTextView = bottomSheetView.findViewById(R.id.game_title);
         gameTitleTextView.setText(game.getTitle());
 
-        MaterialShapeableImageView gameIconImageView = bottomSheetView.findViewById(R.id.game_icon);
+        ShapeableImageView gameIconImageView = bottomSheetView.findViewById(R.id.game_icon);
         gameIconImageView.setImageBitmap(game.getIcon());
 
-        TextView gamePublisherTextView = bottomSheetView.findViewById(R.id.game_publisher);
+        TextView gamePublisherTextView = bottomSheetView.findViewById(R.id.game_author);
         gamePublisherTextView.setText(game.getPublisher());
 
         bottomSheetDialog.show();
