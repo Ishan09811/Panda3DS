@@ -2,7 +2,6 @@ package com.panda3ds.pandroid.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,10 +22,9 @@ import com.panda3ds.pandroid.utils.Constants;
 import com.panda3ds.pandroid.view.PandaGlSurfaceView;
 import com.panda3ds.pandroid.view.PandaLayoutController;
 
-public class GameActivity extends BaseActivity implements GestureDetector.OnGestureListener {
+public class GameActivity extends BaseActivity {
 	private final DrawerFragment drawerFragment = new DrawerFragment();
 	private final AlberInputListener inputListener = new AlberInputListener(this::onBackPressed);
-	private GestureDetector gestureDetector;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,28 +57,6 @@ public class GameActivity extends BaseActivity implements GestureDetector.OnGest
 
 		getSupportFragmentManager().beginTransaction().replace(R.id.drawer_fragment, drawerFragment).commitNow();
 	}
-
-	// Initialize gesture detector
-	@Override
-         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-           float distanceX = e2.getX() - e1.getX();
-           float distanceY = e2.getY() - e1.getY();
-        if (Math.abs(distanceX) > Math.abs(distanceY) && distanceX > 0) {
-        //// Open the drawer when swiping from left to right
-        if (drawerFragment.isOpened()) {
-        } else {
-            drawerFragment.open();
-        }
-        return true;
-    }
-    return false;
-}
-	
-	@Override
-        public boolean dispatchTouchEvent(MotionEvent ev) {
-        gestureDetector.onTouchEvent(ev);
-        return super.dispatchTouchEvent(ev);
-    }
 
 	@Override
 	protected void onResume() {
