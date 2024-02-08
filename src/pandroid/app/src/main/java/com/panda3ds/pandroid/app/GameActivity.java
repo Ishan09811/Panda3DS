@@ -23,7 +23,7 @@ import com.panda3ds.pandroid.utils.Constants;
 import com.panda3ds.pandroid.view.PandaGlSurfaceView;
 import com.panda3ds.pandroid.view.PandaLayoutController;
 
-public class GameActivity extends BaseActivity {
+public class GameActivity extends BaseActivity implements GestureDetector.OnGestureListener {
 	private final DrawerFragment drawerFragment = new DrawerFragment();
 	private final AlberInputListener inputListener = new AlberInputListener(this::onBackPressed);
 	private GestureDetector gestureDetector;
