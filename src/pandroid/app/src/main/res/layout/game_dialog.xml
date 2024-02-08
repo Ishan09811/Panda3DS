@@ -86,7 +86,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:contentDescription="settings"
-                android:textColor="?attr/colorAccent"
                 android:text="Settings"
                 app:layout_maxWidth="140dp"/>
 
