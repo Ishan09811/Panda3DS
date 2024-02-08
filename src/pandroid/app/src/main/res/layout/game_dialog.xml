@@ -62,6 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            app:flexWrap="nowrap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/game_icon"
@@ -74,7 +75,9 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="play"
                 android:focusedByDefault="true"
-                android:text="Play" />
+                android:text="Play"
+                app:layout_flexGrow="1"
+                app:layout_maxWidth="140dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/game_settings"
@@ -83,7 +86,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:contentDescription="settings"
-                android:text="Settings"/>
+                android:text="Settings"
+                app:layout_maxWidth="140dp"/>
 
         </com.google.android.flexbox.FlexboxLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
