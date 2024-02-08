@@ -50,6 +50,14 @@ class ItemHolder extends RecyclerView.ViewHolder {
         TextView gamePublisherTextView = bottomSheetView.findViewById(R.id.game_author);
         gamePublisherTextView.setText(game.getPublisher());
 
+        MaterialButton gamePlayButton = bottomSheetView.findViewById(R.id.game_play);
+        gamePlayButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            GameUtils.launch(v.getContext(), game);
+        }
+    });
+
         bottomSheetDialog.show();
     }
 }
