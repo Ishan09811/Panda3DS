@@ -23,8 +23,29 @@ class ItemHolder extends RecyclerView.ViewHolder {
         ((AppCompatTextView) itemView.findViewById(R.id.description))
                 .setText(game.getPublisher());
 
+        itemView.setOnLongClickListener((v) -> {
+            showBottomSheet(game);
+            return true; // Return true to consume the long click event
+        });
+
         itemView.setOnClickListener((v) -> {
             GameUtils.launch(v.getContext(), game);
         });
+    }
+    private void showBottomSheet(GameMetadata game) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(itemView.getContext());
+        View bottomSheetView = View.inflate(itemView.getContext(), R.layout.game_dialog, null);
+        bottomSheetDialog.setContentView(bottomSheetView);
+
+        TextView gameTitleTextView = bottomSheetView.findViewById(R.id.game_title);
+        gameTitleTextView.setText(game.getTitle());
+
+        MaterialShapeableImageView gameIconImageView = bottomSheetView.findViewById(R.id.game_icon);
+        gameIconImageView.setImageBitmap(game.getIcon());
+
+        TextView gamePublisherTextView = bottomSheetView.findViewById(R.id.game_publisher);
+        gamePublisherTextView.setText(game.getPublisher());
+
+        bottomSheetDialog.show();
     }
 }
