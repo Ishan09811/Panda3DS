@@ -7,6 +7,13 @@
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
+        <item name="switchStyle">@style/SwitchStyle</item>
+        <item name="materialSwitchStyle">@style/SwitchStyle</item>
+        <item name="android:switchStyle">@style/SwitchStyle</item>
+    </style>
+
+    <style name="SwitchStyle" parent="Preference.SwitchPreferenceCompat.Material">
+      <item name="android:widgetLayout">@layout/material_switch_widget</item>  
     </style>
 
     <style name="PreferenceTheme" parent="PreferenceThemeOverlay">
