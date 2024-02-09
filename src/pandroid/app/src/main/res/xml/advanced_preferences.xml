@@ -14,7 +14,7 @@
         app:title="@string/pref_logger_service_title"
         app:defaultValue="true"
         android:summary="@string/pref_logger_service_summary"
-        app:widgetLayout="@layout/materialSwitchWidget"/>
+        app:widgetLayout="@layout/material_switch_widget"/>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
