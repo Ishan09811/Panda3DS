@@ -6,8 +6,7 @@
         android:key="performanceMonitor"
         app:title="@string/pref_performance_monitor_title"
         app:summary="@string/pref_performance_monitor_summary"
-        app:iconSpaceReserved="false"
-        app:widgetLayout="@layout/material_switch_widget"/>
+        app:iconSpaceReserved="false"/>
 
     <SwitchPreference
         android:key="loggerService"
@@ -15,8 +14,7 @@
         app:title="@string/pref_logger_service_title"
         android:defaultValue="true"
         android:summaryOn="@string/pref_logger_service_summary"
-        android:summaryOff="@string/pref_logger_service_summary"
-        app:widgetLayout="@layout/material_switch_widget"/>
+        android:summaryOff="@string/pref_logger_service_summary"/>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
@@ -26,8 +24,7 @@
             app:key="shaderJit"
             app:title="@string/pref_shader_jit_title"
             app:summary="@string/pref_shader_jit_summary"
-            app:iconSpaceReserved="false"
-            app:widgetLayout="@layout/material_switch_widget"/>
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
