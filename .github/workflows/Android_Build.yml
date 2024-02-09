@@ -19,6 +19,16 @@ jobs:
     - name: Set BUILD_TYPE variable
       run: echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
 
+    - name: Restore Gradle Cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle') }}-${{ hashFiles('app/**/*.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle') }}-${{ hashFiles('app/**/*.xml') }}-
+          ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle') }}-
+          ${{ runner.os }}-gradle-
+          
     - uses: actions/checkout@v2
     - name: Fetch submodules
       run: git submodule update --init --recursive
