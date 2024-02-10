@@ -70,24 +70,24 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/game_play"
-                style="@style/Widget.Material3.Button.ElevatedButton"
+                style="@style/Widget.Material3.Button.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="play"
                 android:focusedByDefault="true"
                 android:text="Play"
+                app:icon="@drawable/ic_play"
                 app:layout_flexGrow="1"
                 app:layout_maxWidth="140dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/game_settings"
-                style="@style/Widget.Material3.Button.ElevatedButton"
-                android:layout_width="wrap_content"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:contentDescription="settings"
-                android:text="Settings"
-                app:layout_maxWidth="140dp"/>
+                app:icon="@drawable/ic_settings"/>
 
         </com.google.android.flexbox.FlexboxLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
