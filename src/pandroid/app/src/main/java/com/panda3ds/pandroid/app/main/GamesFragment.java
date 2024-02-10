@@ -27,6 +27,7 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
 	private final ActivityResultContracts.OpenDocument openRomContract = new ActivityResultContracts.OpenDocument();
 	private ActivityResultLauncher<String[]> pickFileRequest;
 	private GamesGridView gameListView;
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Nullable
         @Override
