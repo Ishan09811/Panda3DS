@@ -53,22 +53,21 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
        }
 
        private void removeInvalidGames() {
-        List<GameMetadata> gamesToRemove = new ArrayList<>();
-        for (GameMetadata game : GameUtils.getGames()) {
-            String gamePath = game.getRomPath();
-            if (gamePath != null) {
-                File gameFile = new File(gamePath);
-                if (!gameFile.exists()) {
-                    // Path doesn't exist, mark game for removal
-                    gamesToRemove.add(game);
-                }
+    List<GameMetadata> gamesToRemove = new ArrayList<>();
+    for (GameMetadata game : GameUtils.getGames()) {
+        String gameUri = game.getUri();
+        if (gameUri != null) {
+            String realPath = FileUtils.obtainRealPath(Uri.parse(gameUri));
+            if (realPath == null || !new File(realPath).exists()) {
+                gamesToRemove.add(game);
             }
         }
-        // Remove invalid games from GameUtils
-        for (GameMetadata game : gamesToRemove) {
-            GameUtils.removeGame(game);
-        }
-       }
+    }
+    // Remove invalid games from GameUtils
+    for (GameMetadata game : gamesToRemove) {
+        GameUtils.removeGame(game);
+    }
+}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
