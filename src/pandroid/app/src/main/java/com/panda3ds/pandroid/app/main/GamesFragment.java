@@ -12,11 +12,15 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
 import com.panda3ds.pandroid.utils.FileUtils;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GamesGridView;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GamesFragment extends Fragment implements ActivityResultCallback<Uri> {
@@ -25,10 +29,45 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
 	private GamesGridView gameListView;
 
 	@Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_games, container, false);
+            swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+            swipeRefreshLayout.setOnRefreshListener(this);
+            return rootView;
+        }
+
 	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_games, container, false);
-	}
+        public void onRefresh() {
+        refreshGameList();
+    }
+
+        private void refreshGameList() {
+        // Check and remove invalid games
+        removeInvalidGames();
+		
+        // Refresh the game list
+        gameListView.setGameList(GameUtils.getGames());
+        swipeRefreshLayout.setRefreshing(false);
+       }
+
+       private void removeInvalidGames() {
+        List<GameMetadata> gamesToRemove = new ArrayList<>();
+        for (GameMetadata game : GameUtils.getGames()) {
+            String gamePath = game.getRomPath();
+            if (gamePath != null) {
+                File gameFile = new File(gamePath);
+                if (!gameFile.exists()) {
+                    // Path doesn't exist, mark game for removal
+                    gamesToRemove.add(game);
+                }
+            }
+        }
+        // Remove invalid games from GameUtils
+        for (GameMetadata game : gamesToRemove) {
+            GameUtils.removeGame(game);
+        }
+       }
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -48,10 +87,6 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
 	public void onActivityResult(Uri result) {
 		if (result != null) {
 			String uri = result.toString();
-			if (!uri.endsWith(".3ds") && !uri.endsWith(".cia")) {
-                            Toast.makeText(getContext(), "Invalid ROM file", Toast.LENGTH_LONG).show();
-                            return;
-		         }
 			if (GameUtils.findByRomPath(uri) == null) {
 				if (FileUtils.obtainRealPath(uri) == null) {
 					Toast.makeText(getContext(), "Invalid file path", Toast.LENGTH_LONG).show();
