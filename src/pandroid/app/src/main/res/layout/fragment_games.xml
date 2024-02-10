@@ -3,6 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_refresh_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <com.panda3ds.pandroid.view.gamesgrid.GamesGridView
         android:id="@+id/games"
         android:layout_width="match_parent"
@@ -22,4 +27,5 @@
         android:background="@drawable/simple_card_background"
         android:backgroundTint="?colorPrimary"/>
 
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>      
 </FrameLayout>
