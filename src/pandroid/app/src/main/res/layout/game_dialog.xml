@@ -92,6 +92,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:contentDescription="settings"
+                app:rippleColor="?colorOnSurfaceVariant"
+                app:backgroundTint="?colorPrimary"
                 app:icon="@drawable/ic_settings"/>
 
         </com.google.android.flexbox.FlexboxLayout>
