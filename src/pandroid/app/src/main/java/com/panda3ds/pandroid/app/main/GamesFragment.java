@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GamesFragment extends Fragment implements ActivityResultCallback<Uri> {
+public class GamesFragment extends Fragment implements ActivityResultCallback<Uri>, SwipeRefreshLayout.OnRefreshListener {
 	private final ActivityResultContracts.OpenDocument openRomContract = new ActivityResultContracts.OpenDocument();
 	private ActivityResultLauncher<String[]> pickFileRequest;
 	private GamesGridView gameListView;
