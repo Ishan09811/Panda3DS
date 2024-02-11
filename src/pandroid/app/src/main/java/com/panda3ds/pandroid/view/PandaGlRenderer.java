@@ -30,9 +30,11 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	private int screenTexture;
 	public int screenFbo;
 	private final Context context;
+	private final GameActivity gameActivity;
 
-	PandaGlRenderer(Context context, String romPath) {
+	PandaGlRenderer(GameActivity gameActivity, Context context, String romPath) {
 		super();
+		this.gameActivity = gameActivity;
 		this.context = context;
 		this.romPath = romPath;
 
@@ -105,8 +107,8 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // Finish the activity when OK is clicked
-                                    requireActivity().finish();
+                                    // Finish the GameActivity when OK is clicked
+                                    gameActivity.finish();
                                 }
                             })
 			    .setCancelable(false)
