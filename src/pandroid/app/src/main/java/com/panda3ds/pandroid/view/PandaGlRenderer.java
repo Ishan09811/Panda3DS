@@ -102,7 +102,14 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
                      AlertDialog.Builder builder = new AlertDialog.Builder(context);
                      builder.setTitle("Failed to load ROM")
                             .setMessage("Make sure it's a valid 3DS ROM and that storage permissions are configured properly.")
-                            .setPositiveButton("OK", null)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Finish the activity when OK is clicked
+                                    requireActivity().finish();
+                                }
+                            })
+			    .setCancelable(false)
                             .show();
                  }
               };
