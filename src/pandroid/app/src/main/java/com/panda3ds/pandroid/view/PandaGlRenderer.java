@@ -31,11 +31,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	private int screenTexture;
 	public int screenFbo;
 	private final Context context;
-	private final GameActivity gameActivity;
 
-	PandaGlRenderer(GameActivity gameActivity, Context context, String romPath) {
+	PandaGlRenderer(Context context, String romPath) {
 		super();
-		this.gameActivity = gameActivity;
 		this.context = context;
 		this.romPath = romPath;
 
@@ -105,13 +103,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
                      AlertDialog.Builder builder = new AlertDialog.Builder(context);
                      builder.setTitle("Failed to load ROM")
                             .setMessage("Make sure it's a valid 3DS ROM and that storage permissions are configured properly.")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Finish the GameActivity when OK is clicked
-                                    gameActivity.finish();
-                                }
-                            })
+                            .setPositiveButton("OK", null)
 			    .setCancelable(false)
                             .show();
                  }
