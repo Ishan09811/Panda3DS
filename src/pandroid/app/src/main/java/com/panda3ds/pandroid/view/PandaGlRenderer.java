@@ -20,6 +20,7 @@ import com.panda3ds.pandroid.utils.PerformanceMonitor;
 import com.panda3ds.pandroid.view.renderer.ConsoleRenderer;
 import com.panda3ds.pandroid.view.renderer.layout.ConsoleLayout;
 import com.panda3ds.pandroid.view.renderer.layout.DefaultScreenLayout;
+import com.panda3ds.pandroid.app.GameActivity;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
