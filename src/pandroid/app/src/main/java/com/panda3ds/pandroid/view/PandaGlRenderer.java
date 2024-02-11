@@ -9,6 +9,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.data.SMDH;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
@@ -92,26 +93,16 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 
 		// If loading the ROM failed, display an error message and early exit
 		if (!AlberDriver.LoadRom(romPath)) {
-			// Get a handler that can be used to post to the main thread
-			Handler mainHandler = new Handler(context.getMainLooper());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Failed to load ROM")
+                           .setMessage("Make sure it's a valid 3DS ROM and that storage permissions are configured properly.")
+                           .setPositiveButton("OK", null)
+                           .show();
 
-			Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					Toast
-						.makeText(
-							context, "Failed to load ROM! Make sure it's a valid 3DS ROM and that storage permissions are configured properly.",
-							Toast.LENGTH_LONG
-						)
-						.show();
-				}
-			};
-			mainHandler.post(runnable);
-
-			GameMetadata game = GameUtils.getCurrentGame();
-			GameUtils.removeGame(game);
-			return;
-		}
+                    GameMetadata game = GameUtils.getCurrentGame();
+                    GameUtils.removeGame(game);
+                    return;
+                  }
 
 		// Load the SMDH
 		byte[] smdhData = AlberDriver.GetSmdh();
