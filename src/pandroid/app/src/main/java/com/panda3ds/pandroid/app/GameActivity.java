@@ -63,6 +63,12 @@ public class GameActivity extends BaseActivity {
 			PerformanceView view = new PerformanceView(this);
 			((FrameLayout) findViewById(R.id.panda_gl_frame)).addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		}
+		findViewById(R.id.overlay_controller).setVisibility(View.GONE);
+		
+		if (AlberDriver.HasRomLoaded()) {
+			findViewById(R.id.overlay_controller).setVisibility(View.VISIBLE);
+			findViewById(R.id.card_loading_view).setVisibility(View.GONE);
+		}
 	}
 
 	@Override
