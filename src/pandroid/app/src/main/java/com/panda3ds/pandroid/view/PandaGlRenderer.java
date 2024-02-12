@@ -61,7 +61,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	}
 
 	private void showLoadingDialog() {
-	      mainHandler.post(new Runnable() {
+	      ((Activity) context).runOnUiThread(new Runnable() {
 		  @Override
 		  public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -75,15 +75,15 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	 }
 
 	    private void hideLoadingDialog() {
-		mainHandler.post(new Runnable() {
+              if (alertDialog != null && alertDialog.isShowing()) {
+		  ((Activity) context).runOnUiThread(new Runnable() {
 		    @Override
 		    public void run() {
-              if (alertDialog != null && alertDialog.isShowing()) {
-                  alertDialog.dismiss();
-                }
-            }
-        });
-    }
+                        alertDialog.dismiss();
+                    }
+                });
+             }
+         }
 
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		Log.i(Constants.LOG_TAG, glGetString(GL_EXTENSIONS));
