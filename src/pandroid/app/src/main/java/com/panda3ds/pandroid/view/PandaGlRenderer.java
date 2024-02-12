@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
+import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.data.SMDH;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
