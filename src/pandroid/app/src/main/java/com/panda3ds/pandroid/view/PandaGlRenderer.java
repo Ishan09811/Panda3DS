@@ -104,9 +104,8 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	    private void showLoadingDialog() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Loading Game")
-                builder.setPositiveButton("OK", null)
-                builder.setCancelable(false)
-	        builder.setView(R.layout.progress_dialog);
+                       .setCancelable(false)
+	               .setView(R.layout.progress_dialog);
                 alertDialog = builder.create();
                 alertDialog.show();
             }
@@ -143,7 +142,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 			GameMetadata game = GameUtils.getCurrentGame();
 			GameUtils.removeGame(game);
 			return;
-		}      
+		} else {
+	            hideLoadingDialog();
+		}
 	      }
 	    }, 3000);
 
