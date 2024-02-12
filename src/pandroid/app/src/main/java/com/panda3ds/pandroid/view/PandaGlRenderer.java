@@ -58,12 +58,20 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	}
 
 	private void showLoadingDialog() {
+	      Handler mainHandler = new Handler(context.getMainLooper());
+
+	      Runnable runnable = new Runnable() {
+		      @Override
+		      public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Loading Game")
                        .setCancelable(false)
 	               .setView(R.layout.progress_dialog);
                 alertDialog = builder.create();
                 alertDialog.show();
+		}
+	     };
+             mainHandler.post(runnable);
             }
 
 	    private void hideLoadingDialog() {
@@ -108,15 +116,8 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 		AlberDriver.Initialize();
 		AlberDriver.setShaderJitEnabled(GlobalConfig.get(GlobalConfig.KEY_SHADER_JIT));
 		
-                Handler mainHandler = new Handler(context.getMainLooper());
-
-		Runnable runnable = new Runnable() {
-		        @Override
-		        public void run() {
-		          showLoadingDialog();
-				}
-			};
-			mainHandler.post(runnable);
+	        showLoadingDialog();
+				
 
            new Handler().postDelayed(new Runnable() {
                @Override
@@ -147,7 +148,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	            hideLoadingDialog();
 		}
 	      }
-	    }, 3000);
+	    }, 10000);
 
 		// Load the SMDH
 		byte[] smdhData = AlberDriver.GetSmdh();
