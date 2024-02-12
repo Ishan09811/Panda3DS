@@ -56,6 +56,21 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 		super.finalize();
 	}
 
+	private void showLoadingDialog() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Loading Game")
+                       .setCancelable(false)
+	               .setView(R.layout.progress_dialog);
+                alertDialog = builder.create();
+                alertDialog.show();
+            }
+
+	    private void hideLoadingDialog() {
+              if (alertDialog != null && alertDialog.isShowing()) {
+                  alertDialog.dismiss();
+                }
+	    }
+
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		Log.i(Constants.LOG_TAG, glGetString(GL_EXTENSIONS));
 		Log.w(Constants.LOG_TAG, glGetString(GL_VERSION));
@@ -91,6 +106,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 
 		AlberDriver.Initialize();
 		AlberDriver.setShaderJitEnabled(GlobalConfig.get(GlobalConfig.KEY_SHADER_JIT));
+		
                 Handler mainHandler = new Handler(context.getMainLooper());
 
 		Runnable runnable = new Runnable() {
@@ -100,22 +116,6 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 				}
 			};
 			mainHandler.post(runnable);
-
-	    private void showLoadingDialog() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Loading Game")
-                       .setCancelable(false)
-	               .setView(R.layout.progress_dialog);
-                alertDialog = builder.create();
-                alertDialog.show();
-            }
-
-	    private void hideLoadingDialog() {
-              if (alertDialog != null && alertDialog.isShowing()) {
-                  alertDialog.dismiss();
-                }
-	    }
-                 
 
            new Handler().postDelayed(new Runnable() {
                @Override
