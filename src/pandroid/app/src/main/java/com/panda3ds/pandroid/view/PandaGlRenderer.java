@@ -118,7 +118,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	    }
                  
 
-
+           new Handler().postDelayed(new Runnable() {
+               @Override
+               public void run() {
 		// If loading the ROM failed, display an error message and early exit
 		if (!AlberDriver.LoadRom(romPath)) {
 			hideLoadingDialog();
@@ -141,7 +143,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 			GameMetadata game = GameUtils.getCurrentGame();
 			GameUtils.removeGame(game);
 			return;
-		}
+		}      
+	      }
+	    }, 3000);
 
 		// Load the SMDH
 		byte[] smdhData = AlberDriver.GetSmdh();
