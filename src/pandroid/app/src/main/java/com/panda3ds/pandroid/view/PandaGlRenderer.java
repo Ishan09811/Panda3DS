@@ -32,6 +32,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	public int screenFbo;
 	private AlertDialog alertDialog;
 	private final Context context;
+	private final Handler mainHandler;
 
 	PandaGlRenderer(Context context, String romPath) {
 		super();
@@ -41,6 +42,8 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 		screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 		screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 		setLayout(new DefaultScreenLayout());
+
+		mainHandler = new Handler(context.getMainLooper());
 	}
 
 	@Override
@@ -58,11 +61,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	}
 
 	private void showLoadingDialog() {
-	      Handler mainHandler = new Handler(context.getMainLooper());
-
-	      Runnable runnable = new Runnable() {
-		      @Override
-		      public void run() {
+	      mainHandler.post(new Runnable() {
+		  @Override
+		  public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Loading Game")
                        .setCancelable(false)
@@ -70,15 +71,19 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
                 alertDialog = builder.create();
                 alertDialog.show();
 		}
-	     };
-             mainHandler.post(runnable);
-            }
+            });
+	 }
 
 	    private void hideLoadingDialog() {
+		mainHandler.post(new Runnable() {
+		    @Override
+		    public void run() {
               if (alertDialog != null && alertDialog.isShowing()) {
                   alertDialog.dismiss();
                 }
-	    }
+            }
+        });
+    }
 
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		Log.i(Constants.LOG_TAG, glGetString(GL_EXTENSIONS));
@@ -126,9 +131,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 		if (!AlberDriver.LoadRom(romPath)) {
 			hideLoadingDialog();
 			// Get a handler that can be used to post to the main thread
-			Handler mainHandler = new Handler(context.getMainLooper());
-
-			Runnable runnable = new Runnable() {
+			    mainHandler.post(new Runnable() {
 				@Override
 				public void run() {
 					AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -138,8 +141,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 						.setCancelable(false)
 						.show();
 				}
-			};
-			mainHandler.post(runnable);
+			   });
 
 			GameMetadata game = GameUtils.getCurrentGame();
 			GameUtils.removeGame(game);
