@@ -33,9 +33,11 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	private AlertDialog alertDialog;
 	private final Context context;
 	private final Handler mainHandler;
+	private final Activity activity;
 
-	PandaGlRenderer(Context context, String romPath) {
+	PandaGlRenderer(Activity activity, Context context, String romPath) {
 		super();
+		this.activity = activity;
 		this.context = context;
 		this.romPath = romPath;
 
@@ -61,7 +63,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	}
 
 	private void showLoadingDialog() {
-	      ((Activity) context).runOnUiThread(new Runnable() {
+	      activity.runOnUiThread(new Runnable() {
 		  @Override
 		  public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -76,7 +78,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 
 	    private void hideLoadingDialog() {
               if (alertDialog != null && alertDialog.isShowing()) {
-		  ((Activity) context).runOnUiThread(new Runnable() {
+		  activity.runOnUiThread(new Runnable() {
 		    @Override
 		    public void run() {
                         alertDialog.dismiss();
