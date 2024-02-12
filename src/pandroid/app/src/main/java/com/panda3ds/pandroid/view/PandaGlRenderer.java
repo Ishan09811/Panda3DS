@@ -29,6 +29,7 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	private int screenWidth, screenHeight;
 	private int screenTexture;
 	public int screenFbo;
+	private AlertDialog alertDialog;
 	private final Context context;
 
 	PandaGlRenderer(Context context, String romPath) {
@@ -90,9 +91,37 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 
 		AlberDriver.Initialize();
 		AlberDriver.setShaderJitEnabled(GlobalConfig.get(GlobalConfig.KEY_SHADER_JIT));
+                Handler mainHandler = new Handler(context.getMainLooper());
+
+		Runnable runnable = new Runnable() {
+		        @Override
+		        public void run() {
+		          showLoadingDialog();
+				}
+			};
+			mainHandler.post(runnable);
+
+	    private void showLoadingDialog() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Loading Game")
+                builder.setPositiveButton("OK", null)
+                builder.setCancelable(false)
+	        builder.setView(R.layout.progress_dialog);
+                alertDialog = builder.create();
+                alertDialog.show();
+            }
+
+	    private void hideLoadingDialog() {
+              if (alertDialog != null && alertDialog.isShowing()) {
+                  alertDialog.dismiss();
+                }
+	    }
+                 
+
 
 		// If loading the ROM failed, display an error message and early exit
 		if (!AlberDriver.LoadRom(romPath)) {
+			hideLoadingDialog();
 			// Get a handler that can be used to post to the main thread
 			Handler mainHandler = new Handler(context.getMainLooper());
 
