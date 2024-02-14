@@ -11,14 +11,14 @@
 
     <style name="PreferenceTheme" parent="PreferenceThemeOverlay">
         <item name="preferenceFragmentCompatStyle">@style/PreferenceStyle</item>
-        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>
     </style>
 
     <style name="PreferenceStyle" parent="PreferenceFragment.Material">
         <item name="android:divider">?colorSurfaceVariant</item>
     </style>
 
-    <style name="Preference.SwitchPreference" parent="Preference.SwitchPreference.Material">
+    <style name="Preference.SwitchPreferenceCompat" parent="Preference.SwitchPreferenceCompat.Material">
         <item name="android:widgetLayout">@layout/material_switch_widget</item>
    </style>
 
