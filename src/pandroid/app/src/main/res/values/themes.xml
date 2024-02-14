@@ -8,22 +8,20 @@
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
-        <item name="switchStyle">@style/SwitchStyle</item>
-        <item name="materialSwitchStyle">@style/SwitchStyle</item>
-        <item name="android:switchStyle">@style/SwitchStyle</item>
-    </style>
-
-    <style name="SwitchStyle" parent="Preference.SwitchPreferenceCompat.Material">
-      <item name="android:widgetLayout">@layout/material_switch_widget</item>  
     </style>
 
     <style name="PreferenceTheme" parent="PreferenceThemeOverlay">
         <item name="preferenceFragmentCompatStyle">@style/PreferenceStyle</item>
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference</item>
     </style>
 
     <style name="PreferenceStyle" parent="PreferenceFragment.Material">
         <item name="android:divider">?colorSurfaceVariant</item>
     </style>
+
+    <style name="Preference.SwitchPreference" parent="Preference.SwitchPreference.Material">
+        <item name="android:widgetLayout">@layout/material_switch_widget</item>
+   </style>
 
     <style name="AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:windowBackground">@drawable/alert_dialog_background</item>
