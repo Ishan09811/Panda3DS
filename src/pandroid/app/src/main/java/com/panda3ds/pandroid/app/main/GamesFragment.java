@@ -46,7 +46,7 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
     for (GameMetadata game : GameUtils.getGames()) {
         String gameUri = game.getUri();
         if (gameUri != null) {
-            if (!FileUtils.exists(uri)) {
+            if (!FileUtils.exists(gameUri)) {
                 gamesToRemove.add(game);
             }
         }
