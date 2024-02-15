@@ -18,6 +18,8 @@ import com.panda3ds.pandroid.data.game.GameMetadata;
 import com.panda3ds.pandroid.utils.FileUtils;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GamesGridView;
+import java.util.List;
+import java.util.ArrayList;
 
 
 public class GamesFragment extends Fragment implements ActivityResultCallback<Uri>, SwipeRefreshLayout.OnRefreshListener {
