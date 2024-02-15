@@ -66,8 +66,8 @@ public class Button extends BasicControllerNode {
 		if (stateListener != null) {
 			stateListener.onButtonPressedChange(this, pressed);
                         if (vibrator != null && vibrator.hasVibrator()) {
-                        // Vibrate for 50 milliseconds
-                        vibrator.vibrate(50);
+                        // Vibrate for 1000 milliseconds
+                        vibrator.vibrate((long)(1000));
 	              }
 		}
 	}
