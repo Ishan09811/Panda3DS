@@ -24,6 +24,7 @@ public class Button extends BasicControllerNode {
 
 	public Button(@NonNull Context context) {
 		super(context);
+		this.context = context;
 		init();
 	}
 
