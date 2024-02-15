@@ -2,6 +2,7 @@ package com.panda3ds.pandroid.view.controller.nodes;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Vibrator;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -17,6 +18,7 @@ import com.panda3ds.pandroid.view.controller.listeners.ButtonStateListener;
 public class Button extends BasicControllerNode {
 	private boolean pressed = false;
 	private int width, height;
+	private Context context;
 
 	private ButtonStateListener stateListener;
 
@@ -63,6 +65,11 @@ public class Button extends BasicControllerNode {
 		setAlpha(pressed ? 0.2f : 1.0f);
 		if (stateListener != null) {
 			stateListener.onButtonPressedChange(this, pressed);
+			Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                        if (vibrator != null && vibrator.hasVibrator()) {
+                        // Vibrate for 50 milliseconds
+                        vibrator.vibrate(50);
+	              }
 		}
 	}
 }
