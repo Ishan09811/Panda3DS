@@ -18,6 +18,7 @@ import com.panda3ds.pandroid.view.controller.listeners.ButtonStateListener;
 public class Button extends BasicControllerNode {
 	private boolean pressed = false;
 	private int width, height;
+	private Vibrator vibrator;
 
 	private ButtonStateListener stateListener;
 
@@ -64,7 +65,6 @@ public class Button extends BasicControllerNode {
 		setAlpha(pressed ? 0.2f : 1.0f);
 		if (stateListener != null) {
 			stateListener.onButtonPressedChange(this, pressed);
-			Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                         if (vibrator != null && vibrator.hasVibrator()) {
                         // Vibrate for 50 milliseconds
                         vibrator.vibrate(50);
