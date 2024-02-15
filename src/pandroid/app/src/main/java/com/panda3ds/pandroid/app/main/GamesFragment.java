@@ -53,6 +53,7 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
     for (GameMetadata game : gamesToRemove) {
         GameUtils.removeGame(game);
     }
+}
 
         private void refreshGameList() {
 	// Remove invaild roms 
