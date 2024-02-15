@@ -63,15 +63,17 @@ public class GameActivity extends BaseActivity {
 
 		showLoadingDialog();
 		
-             new Handler().postDelayed(new Runnable() {
-               @Override
-               public void run() {
-		 hideLoadingDialog();
 		((FrameLayout) findViewById(R.id.panda_gl_frame))
 			.addView(pandaSurface, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 		PandaLayoutController controllerLayout = findViewById(R.id.controller_layout);
 		controllerLayout.initialize();
+
+		if (AlberDriver.HasRomLoaded()) {
+			hideLoadingDialog();
+		   } else {
+		        hideLoadingDialog();
+		   }
 
 		((CheckBox) findViewById(R.id.hide_screen_controller)).setOnCheckedChangeListener((buttonView, checked) -> {
 			findViewById(R.id.overlay_controller).setVisibility(checked ? View.VISIBLE : View.GONE);
@@ -88,8 +90,6 @@ public class GameActivity extends BaseActivity {
 			((FrameLayout) findViewById(R.id.panda_gl_frame)).addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		}
 	}
-		     
-    }, 3000);
 
 	@Override
 	protected void onResume() {
