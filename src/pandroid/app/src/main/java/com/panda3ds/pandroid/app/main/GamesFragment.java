@@ -39,7 +39,24 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
         refreshGameList();
         }
 
+	private void removeInvalidGames() {
+    List<GameMetadata> gamesToRemove = new ArrayList<>();
+    for (GameMetadata game : GameUtils.getGames()) {
+        String gameUri = game.getUri();
+        if (gameUri != null) {
+            if (!FileUtils.exists(uri)) {
+                gamesToRemove.add(game);
+            }
+        }
+    }
+    // Remove invalid games from GameUtils
+    for (GameMetadata game : gamesToRemove) {
+        GameUtils.removeGame(game);
+    }
+
         private void refreshGameList() {
+	// Remove invaild roms 
+	removeInvalidGames();
         // Refresh the game list
         gameListView.setGameList(GameUtils.getGames());
         swipeRefreshLayout.setRefreshing(false);
