@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.game.AlberInputListener;
@@ -27,6 +28,7 @@ import com.panda3ds.pandroid.view.utils.PerformanceView;
 public class GameActivity extends BaseActivity {
 	private final DrawerFragment drawerFragment = new DrawerFragment();
 	private final AlberInputListener inputListener = new AlberInputListener(this::onBackPressed);
+	private AlertDialog alertDialog;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,10 +41,32 @@ public class GameActivity extends BaseActivity {
 			finish();
 			return;
 		}
+		
+	    private void showLoadingDialog() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Loading Game")
+                builder.setCancelable(false)
+	        builder.setView(R.layout.progress_dialog);
+                alertDialog = builder.create();
+                alertDialog.show();
+	    }
+
+	     private void hideLoadingDialog() {
+              if (alertDialog != null && alertDialog.isShowing()) {
+                  alertDialog.dismiss();
+                }
+	     }
+		
 
 		PandaGlSurfaceView pandaSurface = new PandaGlSurfaceView(this, intent.getStringExtra(Constants.ACTIVITY_PARAMETER_PATH));
 		setContentView(R.layout.game_activity);
 
+		showLoadingDialog();
+		
+             new Handler().postDelayed(new Runnable() {
+               @Override
+               public void run() {
+		 hideLoadingDialog();
 		((FrameLayout) findViewById(R.id.panda_gl_frame))
 			.addView(pandaSurface, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -64,6 +88,8 @@ public class GameActivity extends BaseActivity {
 			((FrameLayout) findViewById(R.id.panda_gl_frame)).addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		}
 	}
+		     
+    }, 3000);
 
 	@Override
 	protected void onResume() {
