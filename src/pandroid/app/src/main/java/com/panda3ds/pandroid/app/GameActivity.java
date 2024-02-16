@@ -91,6 +91,9 @@ public class GameActivity extends BaseActivity {
         public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
+	    if (drawerFragment.isOpened()) {
+		drawerFragment.close();
+	    }
            findViewById(R.id.overlay_controller).setVisibility(View.GONE);
         } else {
 	  if (GlobalConfig.get(GlobalConfig.KEY_SCREEN_GAMEPAD_VISIBLE)) {
