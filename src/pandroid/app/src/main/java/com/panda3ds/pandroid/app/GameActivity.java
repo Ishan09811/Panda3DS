@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import android.app.PictureInPictureParams;
 import android.content.res.Configuration;
+import android.util.DisplayMetrics;
+import android.util.Rational;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.game.AlberInputListener;
