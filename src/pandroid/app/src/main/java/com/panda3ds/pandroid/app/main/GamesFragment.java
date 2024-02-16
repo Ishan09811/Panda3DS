@@ -44,13 +44,11 @@ public class GamesFragment extends Fragment implements ActivityResultCallback<Ur
 	private void removeInvalidGames() {
     List<GameMetadata> gamesToRemove = new ArrayList<>();
     for (GameMetadata game : GameUtils.getGames()) {
-        String gameUri = game.getUri();
-        if (gameUri != null) {
-            if (!FileUtils.exists(gameUri)) {
+        String gamePath = getRomPath();
+            if (!FileUtils.exists(gamePath)) {
                 gamesToRemove.add(game);
             }
         }
-    }
     // Remove invalid games from GameUtils
     for (GameMetadata game : gamesToRemove) {
         GameUtils.removeGame(game);
