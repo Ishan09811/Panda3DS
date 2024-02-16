@@ -93,7 +93,9 @@ public class GameActivity extends BaseActivity {
         if (isInPictureInPictureMode) {
            findViewById(R.id.overlay_controller).setVisibility(View.GONE);
         } else {
+	  if (GlobalConfig.get(GlobalConfig.KEY_SCREEN_GAMEPAD_VISIBLE)) {
             findViewById(R.id.overlay_controller).setVisibility(View.VISIBLE);
+	  }
         }
     }
 
