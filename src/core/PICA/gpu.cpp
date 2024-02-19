@@ -127,6 +127,7 @@ void GPU::drawArrays(bool indexed) {
 }
 
 static std::array<PICA::Vertex, Renderer::vertexBufferSize> vertices;
+static std::optional<u64> cachedVertexCfg;
 
 template <bool indexed, bool useShaderJIT>
 void GPU::drawArrays() {
@@ -155,8 +156,12 @@ void GPU::drawArrays() {
 	bool shortIndex = Helpers::getBit<31>(indexBufferConfig);  // Indicates whether vert indices are 16-bit or 8-bit
 
 	// Stuff the global attribute config registers in one u64 to make attr parsing easier
-	// TODO: Cache this when the vertex attribute format registers are written to
-	u64 vertexCfg = u64(regs[PICA::InternalRegs::AttribFormatLow]) | (u64(regs[PICA::InternalRegs::AttribFormatHigh]) << 32);
+	// Cache this when the vertex attribute format registers are written to
+        static std::optional<u64> cachedVertexCfg; // Cached vertex configuration
+        if (!cachedVertexCfg.has_value()) {
+            cachedVertexCfg = u64(regs[PICA::InternalRegs::AttribFormatLow]) | (u64(regs[PICA::InternalRegs::AttribFormatHigh]) << 32);
+        }
+        u64 vertexCfg = *cachedVertexCfg;
 
 	if constexpr (!indexed) {
 		u32 offset = regs[PICA::InternalRegs::VertexOffsetReg];
