@@ -23,7 +23,8 @@ public class AppearancePreferences extends BasePreferenceFragment {
        listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
          @Override
          public boolean onPreferenceChange(Preference preference, Object newValue) {
-         GlobalConfig.set(GlobalConfig.KEY_APP_THEME, (Integer) newValue);
+         int themeValue = Integer.parseInt((String) newValue);
+         GlobalConfig.set(GlobalConfig.KEY_APP_THEME, themeValue);
          return true;
          }
        });
