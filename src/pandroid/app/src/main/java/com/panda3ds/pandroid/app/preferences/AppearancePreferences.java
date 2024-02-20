@@ -9,6 +9,8 @@ import com.panda3ds.pandroid.app.BaseActivity;
 import com.panda3ds.pandroid.app.base.BasePreferenceFragment;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 
 public class AppearancePreferences extends BasePreferenceFragment {
     @Override
@@ -21,7 +23,7 @@ public class AppearancePreferences extends BasePreferenceFragment {
        listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
          @Override
          public boolean onPreferenceChange(Preference preference, Object newValue) {
-         GlobalConfig.set(GlobalConfig.KEY_APP_THEME, (String) newValue);
+         GlobalConfig.set(GlobalConfig.KEY_APP_THEME, (Integer) newValue);
          return true;
          }
        });
