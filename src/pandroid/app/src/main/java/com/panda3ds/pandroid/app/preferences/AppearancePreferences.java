@@ -8,7 +8,7 @@ import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.BaseActivity;
 import com.panda3ds.pandroid.app.base.BasePreferenceFragment;
 import com.panda3ds.pandroid.data.config.GlobalConfig;
-import com.panda3ds.pandroid.view.preferences.SingleSelectionPreferences;
+import androidx.preference.ListPreference;
 
 public class AppearancePreferences extends BasePreferenceFragment {
     @Override
@@ -17,11 +17,13 @@ public class AppearancePreferences extends BasePreferenceFragment {
 
         setActivityTitle(R.string.appearance);
 
-        SingleSelectionPreferences themePreference = findPreference("theme");
-        themePreference.setSelectedItem(GlobalConfig.get(GlobalConfig.KEY_APP_THEME));
-        themePreference.setOnPreferenceChangeListener((preference, value) -> {
-            GlobalConfig.set(GlobalConfig.KEY_APP_THEME, (int) value);
-            return false;
-        });
+       ListPreference listPreference = findPreference("theme");
+       listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+         @Override
+         public boolean onPreferenceChange(Preference preference, Object newValue) {
+         GlobalConfig.set(GlobalConfig.KEY_APP_THEME, (String) newValue);
+         return true;
+         }
+       });
     }
 }
