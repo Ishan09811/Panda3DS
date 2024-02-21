@@ -25,6 +25,14 @@ public class AppearancePreferences extends BasePreferenceFragment {
          public boolean onPreferenceChange(Preference preference, Object newValue) {
          int themeValue = Integer.parseInt((String) newValue);
          GlobalConfig.set(GlobalConfig.KEY_APP_THEME, themeValue);
+
+         // Get the index of the selected value
+         int index = listPreference.findIndexOfValue((String) newValue);
+        
+         // Update the summary with the selected entry
+         if (index >= 0) {
+            listPreference.setSummary(listPreference.getEntries()[index]);
+         }
          return true;
          }
        });
