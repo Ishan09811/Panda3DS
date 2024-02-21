@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<PreferenceCategory
+    app:iconSpaceReserved="false"
+    app:title="@string/theme">
+    
+<ListPreference
+    app:iconSpaceReserved="false"
     android:key="theme"
-    android:title="@string/theme"
-    android:summary="DEVICE"
+    android:title="Application Theme"
+    android:summary="Device"
+    android:defaultValue="0"
     android:entries="@array/theme_entries"
     android:entryValues="@array/theme_values"/>
+  </PreferenceCategory>
 </PreferenceScreen>
