@@ -75,6 +75,10 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 			Log.e(Constants.LOG_TAG, "OpenGL 3.1 or higher is required");
 		}
 
+		// Load and compile FXAA shader
+                loadFXAAShaders();
+                compileFXAAShaderProgram();
+
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
