@@ -31,13 +31,13 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	public int screenFbo;
 	private final Context context;
 
-	private int fxaaProgram;
+	private int shaderProgram;
         private int inputTextureLocation;
         private int texelSizeLocation;
         private int screenSizeLocation;
 
-	private String fxaaVertexShaderCode;
-        private String fxaaFragmentShaderCode;
+	private String VertexShaderCode;
+        private String FragmentShaderCode;
 
 	PandaGlRenderer(Context context, String romPath) {
 		super();
@@ -75,9 +75,9 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 			Log.e(Constants.LOG_TAG, "OpenGL 3.1 or higher is required");
 		}
 
-		// Load and compile FXAA shader
-                loadFXAAShaders();
-                compileFXAAShaderProgram();
+		// Load and compile shader
+                loadShaders();
+                compileShaderProgram();
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -161,35 +161,38 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 				40, Constants.N3DS_HALF_HEIGHT, Constants.N3DS_WIDTH - 40, 0, bottomScreen.left, screenHeight - bottomScreen.top, bottomScreen.right,
 				screenHeight - bottomScreen.bottom, GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
-			// Apply FXAA effect
-                        applyFXAA();
+			// Apply Shader effect
+                        applyShader();
 		}
 
 		PerformanceMonitor.runFrame();
 	}
 
-// Load the FXAA shader code
-private void loadFXAAShaders() {
-// FXAA vertex shader code
-    fxaaVertexShaderCode = "#version 330 core\n" +
+// Load the shader code
+private void loadShaders() {
+// vertex shader code
+    VertexShaderCode = "#version 330 core\n" +
             "layout(location = 0) in vec3 aPos;\n" +
             "void main() {\n" +
             "    gl_Position = vec4(aPos, 1.0);\n" +
             "}\n";
 
-    // FXAA fragment shader code
-    fxaaFragmentShaderCode = "#version 330 core\n" +
+    // fragment shader code with improved brightness, contrast, and gamma correction
+    FragmentShaderCode = "#version 330 core\n" +
             "uniform sampler2D inputTexture;\n" +
-            "uniform vec2 texelSize;\n" +
-            "uniform vec2 screenSize;\n" +
+            "uniform float brightness;\n" +
+            "uniform float contrast;\n" +
+            "uniform float gamma;\n" +
             "in vec2 TexCoords;\n" +
             "out vec4 FragColor;\n" +
             "void main() {\n" +
-            "    vec2 texel = 1.0 / screenSize;\n" +
-            "    // FXAA shader logic goes here...\n" +
-            "    FragColor = vec4(1.0); // Temporary color for testing\n" +
+            "    vec4 texColor = texture(inputTexture, TexCoords);\n" +
+            "    texColor.rgb *= brightness;\n" +  // Apply brightness adjustment directly to RGB components
+            "    texColor.rgb = pow(texColor.rgb, vec3(1.0 / gamma));\n" +  // Apply gamma correction
+            "    texColor.rgb = (texColor.rgb - 0.5) * contrast + 0.5;\n" +  // Apply contrast adjustment
+            "    FragColor = texColor;\n" +
             "}\n";
-        }
+}
 	
 // Method to check the compilation status of a shader
 private boolean checkShaderCompileStatus(int shader) {
@@ -215,33 +218,33 @@ private boolean checkProgramLinkStatus(int program) {
     return true;
 }
 
-// Compile and link the FXAA shader program
-private void compileFXAAShaderProgram() {
+// Compile and link the shader program
+private void compileShaderProgram() {
     int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, fxaaVertexShaderCode);
+    glShaderSource(vertexShader, VertexShaderCode);
     glCompileShader(vertexShader);
     checkShaderCompileStatus(vertexShader);
 
     int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, fxaaFragmentShaderCode);
+    glShaderSource(fragmentShader, FragmentShaderCode);
     glCompileShader(fragmentShader);
     checkShaderCompileStatus(fragmentShader);
 
-    fxaaProgram = glCreateProgram();
-    glAttachShader(fxaaProgram, vertexShader);
-    glAttachShader(fxaaProgram, fragmentShader);
-    glLinkProgram(fxaaProgram);
-    checkProgramLinkStatus(fxaaProgram);
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    checkProgramLinkStatus(shaderProgram);
 
     // Get uniform locations
-    inputTextureLocation = glGetUniformLocation(fxaaProgram, "inputTexture");
-    texelSizeLocation = glGetUniformLocation(fxaaProgram, "texelSize");
-    screenSizeLocation = glGetUniformLocation(fxaaProgram, "screenSize");
+    inputTextureLocation = glGetUniformLocation(shaderProgram, "inputTexture");
+    texelSizeLocation = glGetUniformLocation(shaderProgram, "texelSize");
+    screenSizeLocation = glGetUniformLocation(shaderProgram, "screenSize");
 }
 
 // Render a fullscreen quad with the FXAA shader
-private void applyFXAA() {
-    glUseProgram(fxaaProgram);
+private void applyShader() {
+    glUseProgram(shaderProgram);
 
     // Set shader uniforms
     glUniform1i(inputTextureLocation, 0); // Assuming input texture is bound to texture unit 0
