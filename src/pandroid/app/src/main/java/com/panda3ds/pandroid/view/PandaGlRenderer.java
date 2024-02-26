@@ -190,6 +190,30 @@ private void loadFXAAShaders() {
             "    FragColor = vec4(1.0); // Temporary color for testing\n" +
             "}\n";
         }
+	
+// Method to check the compilation status of a shader
+private boolean checkShaderCompileStatus(int shader) {
+    final int[] compileStatus = new int[1];
+    glGetShaderiv(shader, GL_COMPILE_STATUS, compileStatus, 0);
+    if (compileStatus[0] == 0) {
+        Log.e(Constants.LOG_TAG, "Shader compilation failed: " + glGetShaderInfoLog(shader));
+        glDeleteShader(shader);
+        return false;
+    }
+    return true;
+}
+
+// Method to check the linking status of a shader program
+private boolean checkProgramLinkStatus(int program) {
+    final int[] linkStatus = new int[1];
+    glGetProgramiv(program, GL_LINK_STATUS, linkStatus, 0);
+    if (linkStatus[0] == 0) {
+        Log.e(Constants.LOG_TAG, "Shader program linking failed: " + glGetProgramInfoLog(program));
+        glDeleteProgram(program);
+        return false;
+    }
+    return true;
+}
 
 // Compile and link the FXAA shader program
 private void compileFXAAShaderProgram() {
