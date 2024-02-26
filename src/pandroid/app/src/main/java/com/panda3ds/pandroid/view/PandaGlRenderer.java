@@ -31,6 +31,14 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 	public int screenFbo;
 	private final Context context;
 
+	private int fxaaProgram;
+        private int inputTextureLocation;
+        private int texelSizeLocation;
+        private int screenSizeLocation;
+
+	private String fxaaVertexShaderCode;
+        private String fxaaFragmentShaderCode;
+
 	PandaGlRenderer(Context context, String romPath) {
 		super();
 		this.context = context;
@@ -149,10 +157,70 @@ public class PandaGlRenderer implements GLSurfaceView.Renderer, ConsoleRenderer 
 				40, Constants.N3DS_HALF_HEIGHT, Constants.N3DS_WIDTH - 40, 0, bottomScreen.left, screenHeight - bottomScreen.top, bottomScreen.right,
 				screenHeight - bottomScreen.bottom, GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
+			// Apply FXAA effect
+                        applyFXAA();
 		}
 
 		PerformanceMonitor.runFrame();
 	}
+
+// Load the FXAA shader code
+private void loadFXAAShaders() {
+// FXAA vertex shader code
+    fxaaVertexShaderCode = "#version 330 core\n" +
+            "layout(location = 0) in vec3 aPos;\n" +
+            "void main() {\n" +
+            "    gl_Position = vec4(aPos, 1.0);\n" +
+            "}\n";
+
+    // FXAA fragment shader code
+    fxaaFragmentShaderCode = "#version 330 core\n" +
+            "uniform sampler2D inputTexture;\n" +
+            "uniform vec2 texelSize;\n" +
+            "uniform vec2 screenSize;\n" +
+            "in vec2 TexCoords;\n" +
+            "out vec4 FragColor;\n" +
+            "void main() {\n" +
+            "    vec2 texel = 1.0 / screenSize;\n" +
+            "    // FXAA shader logic goes here...\n" +
+            "    FragColor = vec4(1.0); // Temporary color for testing\n" +
+            "}\n";
+        }
+
+// Compile and link the FXAA shader program
+private void compileFXAAShaderProgram() {
+    int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, fxaaVertexShaderCode);
+    glCompileShader(vertexShader);
+    checkShaderCompileStatus(vertexShader);
+
+    int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, fxaaFragmentShaderCode);
+    glCompileShader(fragmentShader);
+    checkShaderCompileStatus(fragmentShader);
+
+    fxaaProgram = glCreateProgram();
+    glAttachShader(fxaaProgram, vertexShader);
+    glAttachShader(fxaaProgram, fragmentShader);
+    glLinkProgram(fxaaProgram);
+    checkProgramLinkStatus(fxaaProgram);
+
+    // Get uniform locations
+    inputTextureLocation = glGetUniformLocation(fxaaProgram, "inputTexture");
+    texelSizeLocation = glGetUniformLocation(fxaaProgram, "texelSize");
+    screenSizeLocation = glGetUniformLocation(fxaaProgram, "screenSize");
+}
+
+// Render a fullscreen quad with the FXAA shader
+private void applyFXAA() {
+    glUseProgram(fxaaProgram);
+
+    // Set shader uniforms
+    glUniform1i(inputTextureLocation, 0); // Assuming input texture is bound to texture unit 0
+    glUniform2f(texelSizeLocation, 1.0f / screenWidth, 1.0f / screenHeight);
+    glUniform2f(screenSizeLocation, screenWidth, screenHeight);
+
+}
 
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		screenWidth = width;
