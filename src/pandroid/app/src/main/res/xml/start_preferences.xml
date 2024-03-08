@@ -31,4 +31,10 @@
         app:summary="@string/pref_advanced_summary"
         app:layout="@layout/preference_start_item"/>
 
+    <Preference
+        app:key="share_log"
+        app:title="Share Log"
+        app:summary="Share Pandroid's log file to check issues."
+        app:layout="@layout/preference_start_item"/>
+
 </PreferenceScreen>
