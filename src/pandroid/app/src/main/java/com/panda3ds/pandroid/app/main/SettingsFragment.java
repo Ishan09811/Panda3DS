@@ -2,6 +2,8 @@ package com.panda3ds.pandroid.app.main;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
