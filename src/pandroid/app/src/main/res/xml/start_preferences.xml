@@ -33,6 +33,7 @@
 
     <Preference
         app:key="share_log"
+        app:icon="@drawable/ic_share"
         app:title="@string/share_log"
         app:summary="@string/pref_share_log_summary"
         app:layout="@layout/preference_start_item"/>
