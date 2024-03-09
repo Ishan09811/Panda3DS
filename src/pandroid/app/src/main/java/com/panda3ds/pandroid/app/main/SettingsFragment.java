@@ -32,16 +32,21 @@ public class SettingsFragment extends BasePreferenceFragment {
     }
 
    private void shareLogFile() {
-    // Share The Log File
-    String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
-    File file = new File(filePath);
-    Uri uri = FileProvider.getUriForFile(requireContext(), "com.panda3ds.pandroid.fileprovider", file);
+       String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
+       File file = new File(filePath);
 
-    Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.setType("text/plain");
-    intent.putExtra(Intent.EXTRA_STREAM, uri);
-    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    startActivity(Intent.createChooser(intent, "Share Log File"));
+       // Check if the log file exists and then share
+       if (file.exists()) {
+           Uri uri = FileProvider.getUriForFile(requireContext(), "com.panda3ds.pandroid.fileprovider", file);
+
+           Intent intent = new Intent(Intent.ACTION_SEND);
+           intent.setType("text/plain");
+           intent.putExtra(Intent.EXTRA_STREAM, uri);
+           intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+           startActivity(Intent.createChooser(intent, "Share Log File"));
+       } else {
+           Toast.makeText(requireContext(), "No log file found", Toast.LENGTH_SHORT).show();
+       }
    }
 
     private String getVersionName() {
