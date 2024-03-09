@@ -84,7 +84,7 @@
     <string name="play">Play</string>
     <!-- Share Log -->
     <string name="share_log">Share Log</string>
-    <string name="pref_share_log_summary">Share Pandroid's log file to check issues.</string>
+    <string name="pref_share_log_summary">Share Pandroid\'s log file to check issues.</string>
     <string name="no_log_file_found">No log file found</string>
     <!-- Screen layout editor -->
     <string name="fix_aspect">Maintain aspect ratio</string>
