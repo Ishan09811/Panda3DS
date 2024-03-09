@@ -29,15 +29,18 @@ public class SettingsFragment extends BasePreferenceFragment {
         });
     }
 
-    private void shareLogFile() {
-        // Share the log file
-        String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
-        Uri uri = Uri.parse("file://" + filePath);
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(intent, "Share Log File"));
-    }
+   private void shareLogFile() {
+    // Share The Log File
+    String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
+    File file = new File(filePath);
+    Uri uri = FileProvider.getUriForFile(requireContext(), "com.panda3ds.pandroid.fileprovider", file);
+
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_STREAM, uri);
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    startActivity(Intent.createChooser(intent, "Share Log File"));
+   }
 
     private String getVersionName() {
         try {
