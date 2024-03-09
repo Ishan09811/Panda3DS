@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
+import androidx.core.content.FileProvider;
 
 import androidx.annotation.Nullable;
 
@@ -14,6 +15,7 @@ import com.panda3ds.pandroid.app.base.BasePreferenceFragment;
 import com.panda3ds.pandroid.app.preferences.GeneralPreferences;
 import com.panda3ds.pandroid.app.preferences.AdvancedPreferences;
 import com.panda3ds.pandroid.app.preferences.InputPreferences;
+import java.io.File;
 
 public class SettingsFragment extends BasePreferenceFragment {
     @Override
