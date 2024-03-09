@@ -46,7 +46,7 @@ public class SettingsFragment extends BasePreferenceFragment {
            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
            startActivity(Intent.createChooser(intent, "Share Log File"));
        } else {
-           Toast.makeText(requireContext(), "No log file found", Toast.LENGTH_SHORT).show();
+           Toast.makeText(requireContext(), getString(R.string.no_log_file_found), Toast.LENGTH_SHORT).show();
        }
    }
 
