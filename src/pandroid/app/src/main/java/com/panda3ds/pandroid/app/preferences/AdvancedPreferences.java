@@ -29,7 +29,6 @@ public class AdvancedPreferences extends BasePreferenceFragment {
 
         setItemClick("shareLog", pref -> {
             shareLogFile();
-            return true;
         });
         setItemClick("performanceMonitor", pref -> GlobalConfig.set(GlobalConfig.KEY_SHOW_PERFORMANCE_OVERLAY, ((SwitchPreferenceCompat) pref).isChecked()));
         setItemClick("shaderJit", pref -> GlobalConfig.set(GlobalConfig.KEY_SHADER_JIT, ((SwitchPreferenceCompat) pref).isChecked()));
