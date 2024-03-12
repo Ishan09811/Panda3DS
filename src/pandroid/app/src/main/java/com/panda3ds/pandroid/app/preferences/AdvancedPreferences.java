@@ -38,7 +38,6 @@ public class AdvancedPreferences extends BasePreferenceFragment {
             if (checked) {
                 ctx.startService(new Intent(ctx, LoggerService.class));
             } else {
-                findPreference("shareLog").setVisible(false);
                 ctx.stopService(new Intent(ctx, LoggerService.class));
             }
             GlobalConfig.set(GlobalConfig.KEY_LOGGER_SERVICE, checked);
@@ -54,6 +53,11 @@ public class AdvancedPreferences extends BasePreferenceFragment {
     }
 
     private void refresh() {
+        if (GlobalConfig.get(GlobalConfig.KEY_LOGGER_SERVICE)) {
+        findPreference("shareLog").setVisible(true);
+        } else {
+        findPreference("shareLog").setVisible(false);
+        }
         ((SwitchPreferenceCompat) findPreference("performanceMonitor")).setChecked(GlobalConfig.get(GlobalConfig.KEY_SHOW_PERFORMANCE_OVERLAY));
         ((SwitchPreferenceCompat) findPreference("loggerService")).setChecked(GlobalConfig.get(GlobalConfig.KEY_LOGGER_SERVICE));
         ((SwitchPreferenceCompat) findPreference("shaderJit")).setChecked(GlobalConfig.get(GlobalConfig.KEY_SHADER_JIT));
