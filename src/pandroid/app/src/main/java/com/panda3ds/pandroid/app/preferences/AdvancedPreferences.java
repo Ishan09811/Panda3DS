@@ -27,36 +27,10 @@ public class AdvancedPreferences extends BasePreferenceFragment {
         setPreferencesFromResource(R.xml.advanced_preferences, rootKey);
         setActivityTitle(R.string.advanced_options);
 
-        Preference shareLogPreference = findPreference("shareLog");
-
-        shareLogPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                shareLogFile();
-                return true;
-            }
+        setItemClick("shareLog", pref -> {
+            shareLogFile();
+            return true;
         });
-    }
-
-    private void shareLogFile() {
-       String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
-       File file = new File(filePath);
-
-       // Check if the log file exists and then share
-       if (file.exists()) {
-           Uri uri = FileProvider.getUriForFile(requireContext(), "com.panda3ds.pandroid.fileprovider", file);
-
-           Intent intent = new Intent(Intent.ACTION_SEND);
-           intent.setType("text/plain");
-           intent.putExtra(Intent.EXTRA_STREAM, uri);
-           intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-           startActivity(Intent.createChooser(intent, "Share Log File"));
-       } else {
-           Toast.makeText(requireContext(), getString(R.string.no_log_file_found), Toast.LENGTH_SHORT).show();
-       }
-    }
-        
-
         setItemClick("performanceMonitor", pref -> GlobalConfig.set(GlobalConfig.KEY_SHOW_PERFORMANCE_OVERLAY, ((SwitchPreferenceCompat) pref).isChecked()));
         setItemClick("shaderJit", pref -> GlobalConfig.set(GlobalConfig.KEY_SHADER_JIT, ((SwitchPreferenceCompat) pref).isChecked()));
         setItemClick("loggerService", pref -> {
@@ -83,5 +57,23 @@ public class AdvancedPreferences extends BasePreferenceFragment {
         ((SwitchPreferenceCompat) findPreference("performanceMonitor")).setChecked(GlobalConfig.get(GlobalConfig.KEY_SHOW_PERFORMANCE_OVERLAY));
         ((SwitchPreferenceCompat) findPreference("loggerService")).setChecked(GlobalConfig.get(GlobalConfig.KEY_LOGGER_SERVICE));
         ((SwitchPreferenceCompat) findPreference("shaderJit")).setChecked(GlobalConfig.get(GlobalConfig.KEY_SHADER_JIT));
+    }
+
+    private void shareLogFile() {
+       String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
+       File file = new File(filePath);
+
+       // Check if the log file exists and then share
+       if (file.exists()) {
+           Uri uri = FileProvider.getUriForFile(requireContext(), "com.panda3ds.pandroid.fileprovider", file);
+
+           Intent intent = new Intent(Intent.ACTION_SEND);
+           intent.setType("text/plain");
+           intent.putExtra(Intent.EXTRA_STREAM, uri);
+           intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+           startActivity(Intent.createChooser(intent, "Share Log File"));
+       } else {
+           Toast.makeText(requireContext(), getString(R.string.no_log_file_found), Toast.LENGTH_SHORT).show();
+       }
     }
 }
