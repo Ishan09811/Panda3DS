@@ -21,7 +21,8 @@ public class SettingsFragment extends BasePreferenceFragment {
         setItemClick("input", (item) -> PreferenceActivity.launch(requireContext(), InputPreferences.class));
         setItemClick("general", (item)-> PreferenceActivity.launch(requireContext(), GeneralPreferences.class));
         setItemClick("advanced", (item)-> PreferenceActivity.launch(requireContext(), AdvancedPreferences.class));
-
+    }
+    
     private String getVersionName() {
         try {
             Context context = PandroidApplication.getAppContext();
