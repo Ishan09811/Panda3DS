@@ -38,6 +38,7 @@ public class AdvancedPreferences extends BasePreferenceFragment {
             if (checked) {
                 ctx.startService(new Intent(ctx, LoggerService.class));
             } else {
+                findPreference("shareLog").setVisible(false);
                 ctx.stopService(new Intent(ctx, LoggerService.class));
             }
             GlobalConfig.set(GlobalConfig.KEY_LOGGER_SERVICE, checked);
