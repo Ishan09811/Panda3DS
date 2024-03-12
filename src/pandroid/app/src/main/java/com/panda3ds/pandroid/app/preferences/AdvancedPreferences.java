@@ -36,6 +36,7 @@ public class AdvancedPreferences extends BasePreferenceFragment {
                 return true;
             }
         });
+    }
 
     private void shareLogFile() {
        String filePath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/logs/current.txt";
