@@ -37,7 +37,7 @@
         <Preference
             android:key="shareLog"
             app:iconSpaceReserved="false"
-            app:title="@string/share_log"
+            app:title="@string/pref_share_log_title"
             android:summary="@string/pref_share_log_summary"/>
         
          </PreferenceCategory>
