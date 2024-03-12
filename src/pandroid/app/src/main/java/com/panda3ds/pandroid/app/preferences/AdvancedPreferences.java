@@ -36,8 +36,10 @@ public class AdvancedPreferences extends BasePreferenceFragment {
             boolean checked = ((SwitchPreferenceCompat) pref).isChecked();
             Context ctx = PandroidApplication.getAppContext();
             if (checked) {
+                findPreference("shareLog").setVisible(true);
                 ctx.startService(new Intent(ctx, LoggerService.class));
             } else {
+                findPreference("shareLog").setVisible(false);
                 ctx.stopService(new Intent(ctx, LoggerService.class));
             }
             GlobalConfig.set(GlobalConfig.KEY_LOGGER_SERVICE, checked);
