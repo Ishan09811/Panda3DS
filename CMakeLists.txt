@@ -1,9 +1,9 @@
-# We need to be able to use enable_language(OBJC) on Mac, so we need CMake 3.16 vs the 3.10 we use otherwise. Blame Apple.
+# We need to be able to use enable_language(OBJC) on Mac, so we need CMake 3.16 vs the 3.11 we use otherwise. Blame Apple.
 if (APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
     cmake_minimum_required(VERSION 3.16)
 else()
-    cmake_minimum_required(VERSION 3.10)
+    cmake_minimum_required(VERSION 3.11)
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -33,6 +33,7 @@ option(GPU_DEBUG_INFO "Enable additional GPU debugging info" OFF)
 option(ENABLE_OPENGL "Enable OpenGL rendering backend" ON)
 option(ENABLE_VULKAN "Enable Vulkan rendering backend" ON)
 option(ENABLE_LTO "Enable link-time optimization" OFF)
+option(ENABLE_TESTS "Compile unit-tests" OFF)
 option(ENABLE_USER_BUILD "Make a user-facing build. These builds have various assertions disabled, LTO, and more" OFF)
 option(ENABLE_HTTP_SERVER "Enable HTTP server. Used for Discord bot support" OFF)
 option(ENABLE_DISCORD_RPC "Compile with Discord RPC support (disabled by default)" ON)
@@ -40,9 +41,15 @@ option(ENABLE_LUAJIT "Enable scripting with the Lua programming language" ON)
 option(ENABLE_QT_GUI "Enable the Qt GUI. If not selected then the emulator uses a minimal SDL-based UI instead" OFF)
 option(BUILD_HYDRA_CORE "Build a Hydra core" OFF)
 
+if(BUILD_HYDRA_CORE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
+add_library(AlberCore STATIC)
+
 include_directories(${PROJECT_SOURCE_DIR}/include/)
 include_directories(${PROJECT_SOURCE_DIR}/include/kernel)
-include_directories (${FMT_INCLUDE_DIR})
+include_directories(${FMT_INCLUDE_DIR})
 include_directories(third_party/boost/)
 include_directories(third_party/elfio/)
 include_directories(third_party/imgui/)
@@ -61,28 +68,19 @@ add_compile_definitions(NOMINMAX)             # Make windows.h not define min/ma
 add_compile_definitions(WIN32_LEAN_AND_MEAN)  # Make windows.h not include literally everything
 add_compile_definitions(SDL_MAIN_HANDLED)
 
-if(BUILD_HYDRA_CORE)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
 if(ENABLE_DISCORD_RPC AND NOT ANDROID)
     add_subdirectory(third_party/discord-rpc)
     include_directories(third_party/discord-rpc/include)
 endif()
 
-if(ENABLE_QT_GUI)
-    find_package(Qt6 REQUIRED COMPONENTS Widgets)
-
-    # We can't use qt_standard_project_setup since it's Qt 6.3+ and we don't need to set the minimum that high
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    set(CMAKE_AUTOUIC ON)
-endif()
-
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
-add_subdirectory(third_party/SDL2)
+
+if (NOT ANDROID)
+    add_subdirectory(third_party/SDL2)
+    target_link_libraries(AlberCore PUBLIC SDL2-static)
+endif()
 
 add_subdirectory(third_party/toml11)
 include_directories(${SDL2_INCLUDE_DIR})
@@ -101,6 +99,8 @@ target_include_directories(boost SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
 
 if(ANDROID)
     set(CRYPTOPP_OPT_DISABLE_ASM ON CACHE BOOL "" FORCE)
+    target_sources(AlberCore PRIVATE src/jni_driver.cpp)
+    target_link_libraries(AlberCore PRIVATE EGL log)
 endif()
 
 set(CRYPTOPP_BUILD_TESTING OFF)
@@ -117,6 +117,9 @@ if(ENABLE_LUAJIT)
       target_compile_definitions(minilua PRIVATE _CRT_SECURE_NO_WARNINGS)
       target_compile_definitions(buildvm PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
+
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_ENABLE_LUA=1")
+    target_link_libraries(AlberCore PRIVATE libluajit)
 endif()
 
 # Check for x64
@@ -153,9 +156,9 @@ endif()
 add_subdirectory(third_party/teakra EXCLUDE_FROM_ALL)
 
 set(SOURCE_FILES src/emulator.cpp src/io_file.cpp src/config.cpp
-				 src/core/CPU/cpu_dynarmic.cpp src/core/CPU/dynarmic_cycles.cpp
-				 src/core/memory.cpp src/renderer.cpp src/core/renderer_null/renderer_null.cpp
-				 src/http_server.cpp src/stb_image_write.c src/core/cheats.cpp src/core/action_replay.cpp
+                 src/core/CPU/cpu_dynarmic.cpp src/core/CPU/dynarmic_cycles.cpp
+                 src/core/memory.cpp src/renderer.cpp src/core/renderer_null/renderer_null.cpp
+                 src/http_server.cpp src/stb_image_write.c src/core/cheats.cpp src/core/action_replay.cpp
                  src/discord_rpc.cpp src/lua.cpp src/memory_mapped_file.cpp src/miniaudio.cpp
 )
 set(CRYPTO_SOURCE_FILES src/core/crypto/aes_engine.cpp)
@@ -198,29 +201,6 @@ set(AUDIO_SOURCE_FILES src/core/audio/dsp_core.cpp src/core/audio/null_core.cpp 
 )
 set(RENDERER_SW_SOURCE_FILES src/core/renderer_sw/renderer_sw.cpp)
 
-# Frontend source files
-if(NOT ANDROID)
-    if(ENABLE_QT_GUI)
-        set(FRONTEND_SOURCE_FILES src/panda_qt/main.cpp src/panda_qt/screen.cpp src/panda_qt/main_window.cpp src/panda_qt/about_window.cpp
-            src/panda_qt/config_window.cpp src/panda_qt/zep.cpp src/panda_qt/text_editor.cpp src/panda_qt/cheats_window.cpp
-        )   
-        set(FRONTEND_HEADER_FILES include/panda_qt/screen.hpp include/panda_qt/main_window.hpp include/panda_qt/about_window.hpp
-            include/panda_qt/config_window.hpp include/panda_qt/text_editor.hpp include/panda_qt/cheats_window.hpp
-        )
-
-        source_group("Source Files\\Qt" FILES ${FRONTEND_SOURCE_FILES})
-        source_group("Header Files\\Qt" FILES ${FRONTEND_HEADER_FILES})
-        include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-
-        include_directories(third_party/zep/include) # Include zep for text editor usage
-        configure_file(third_party/zep/cmake/config_app.h.cmake ${CMAKE_BINARY_DIR}/zep_config/config_app.h)
-        include_directories(${CMAKE_BINARY_DIR}/zep_config)
-    else()
-        set(FRONTEND_SOURCE_FILES src/panda_sdl/main.cpp src/panda_sdl/frontend_sdl.cpp)
-        set(FRONTEND_HEADER_FILES "")
-    endif()
-endif()
-
 set(HEADER_FILES include/emulator.hpp include/helpers.hpp include/termcolor.hpp
                  include/cpu.hpp include/cpu_dynarmic.hpp include/memory.hpp include/renderer.hpp include/kernel/kernel.hpp
                  include/dynarmic_cp15.hpp include/kernel/resource_limits.hpp include/kernel/kernel_types.hpp
@@ -257,10 +237,10 @@ set(HEADER_FILES include/emulator.hpp include/helpers.hpp include/termcolor.hpp
 )
 
 cmrc_add_resource_library(
-	resources_console_fonts
-	NAMESPACE ConsoleFonts
-	WHENCE "src/core/services/fonts/"
-	"src/core/services/fonts/CitraSharedFontUSRelocated.bin"
+    resources_console_fonts
+    NAMESPACE ConsoleFonts
+    WHENCE "src/core/services/fonts/"
+    "src/core/services/fonts/CitraSharedFontUSRelocated.bin"
 )
 
 set(THIRD_PARTY_SOURCE_FILES third_party/imgui/imgui.cpp
@@ -282,6 +262,7 @@ if(ENABLE_LUAJIT AND NOT ANDROID)
     set(LIBUV_BUILD_SHARED OFF)
 
     add_subdirectory(third_party/libuv)
+    target_link_libraries(AlberCore PRIVATE uv_a)
 endif()
 
 if(ENABLE_QT_GUI)
@@ -315,62 +296,66 @@ set(RENDERER_VK_SOURCE_FILES "") # Empty by default unless we are compiling with
 
 if(ENABLE_OPENGL)
     # This may look weird but opengl.hpp is our header even if it's in the third_party folder
-	set(RENDERER_GL_INCLUDE_FILES third_party/opengl/opengl.hpp
-		include/renderer_gl/renderer_gl.hpp include/renderer_gl/textures.hpp
-		include/renderer_gl/surfaces.hpp include/renderer_gl/surface_cache.hpp
-		include/renderer_gl/gl_state.hpp
-	)
+    set(RENDERER_GL_INCLUDE_FILES third_party/opengl/opengl.hpp
+        include/renderer_gl/renderer_gl.hpp include/renderer_gl/textures.hpp
+        include/renderer_gl/surfaces.hpp include/renderer_gl/surface_cache.hpp
+        include/renderer_gl/gl_state.hpp
+    )
 
-	set(RENDERER_GL_SOURCE_FILES src/core/renderer_gl/renderer_gl.cpp
+    set(RENDERER_GL_SOURCE_FILES src/core/renderer_gl/renderer_gl.cpp
         src/core/renderer_gl/textures.cpp src/core/renderer_gl/etc1.cpp
         src/core/renderer_gl/gl_state.cpp src/host_shaders/opengl_display.frag
         src/host_shaders/opengl_display.vert src/host_shaders/opengl_vertex_shader.vert
         src/host_shaders/opengl_fragment_shader.frag
-	)
+    )
 
     set(HEADER_FILES ${HEADER_FILES} ${RENDERER_GL_INCLUDE_FILES})
     source_group("Source Files\\Core\\OpenGL Renderer" FILES ${RENDERER_GL_SOURCE_FILES})
 
-	cmrc_add_resource_library(
-		resources_renderer_gl
-		NAMESPACE RendererGL
-		WHENCE "src/host_shaders/"
-		"src/host_shaders/opengl_display.frag"
-		"src/host_shaders/opengl_display.vert"
-		"src/host_shaders/opengl_vertex_shader.vert"
-		"src/host_shaders/opengl_fragment_shader.frag"
-	)
+    cmrc_add_resource_library(
+        resources_renderer_gl
+        NAMESPACE RendererGL
+        WHENCE "src/host_shaders/"
+        "src/host_shaders/opengl_display.frag"
+        "src/host_shaders/opengl_display.vert"
+        "src/host_shaders/opengl_vertex_shader.vert"
+        "src/host_shaders/opengl_fragment_shader.frag"
+    )
+
+    target_sources(AlberCore PRIVATE ${RENDERER_GL_SOURCE_FILES})
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_ENABLE_OPENGL=1")
+    target_link_libraries(AlberCore PRIVATE resources_renderer_gl)
 endif()
 
 if(ENABLE_VULKAN)
-	find_package(
-		Vulkan 1.3.206 REQUIRED
-		COMPONENTS glslangValidator
-	)
+    find_package(
+        Vulkan 1.3.206 REQUIRED
+        COMPONENTS glslangValidator
+    )
 
-	set(RENDERER_VK_INCLUDE_FILES include/renderer_vk/renderer_vk.hpp
-		include/renderer_vk/vk_api.hpp include/renderer_vk/vk_debug.hpp
-		include/renderer_vk/vk_descriptor_heap.hpp
-		include/renderer_vk/vk_descriptor_update_batch.hpp
-		include/renderer_vk/vk_sampler_cache.hpp
-		include/renderer_vk/vk_memory.hpp include/renderer_vk/vk_pica.hpp
-	)
+    set(RENDERER_VK_INCLUDE_FILES include/renderer_vk/renderer_vk.hpp
+        include/renderer_vk/vk_api.hpp include/renderer_vk/vk_debug.hpp
+        include/renderer_vk/vk_descriptor_heap.hpp
+        include/renderer_vk/vk_descriptor_update_batch.hpp
+        include/renderer_vk/vk_sampler_cache.hpp
+        include/renderer_vk/vk_memory.hpp include/renderer_vk/vk_pica.hpp
+    )
 
-	set(RENDERER_VK_SOURCE_FILES src/core/renderer_vk/renderer_vk.cpp
-		src/core/renderer_vk/vk_api.cpp src/core/renderer_vk/vk_debug.cpp
-		src/core/renderer_vk/vk_descriptor_heap.cpp
-		src/core/renderer_vk/vk_descriptor_update_batch.cpp
-		src/core/renderer_vk/vk_sampler_cache.cpp
-		src/core/renderer_vk/vk_memory.cpp src/core/renderer_vk/vk_pica.cpp
-	)
+    set(RENDERER_VK_SOURCE_FILES src/core/renderer_vk/renderer_vk.cpp
+        src/core/renderer_vk/vk_api.cpp src/core/renderer_vk/vk_debug.cpp
+        src/core/renderer_vk/vk_descriptor_heap.cpp
+        src/core/renderer_vk/vk_descriptor_update_batch.cpp
+        src/core/renderer_vk/vk_sampler_cache.cpp
+        src/core/renderer_vk/vk_memory.cpp src/core/renderer_vk/vk_pica.cpp
+    )
 
     set(HEADER_FILES ${HEADER_FILES} ${RENDERER_VK_INCLUDE_FILES})
     source_group("Source Files\\Core\\Vulkan Renderer" FILES ${RENDERER_VK_SOURCE_FILES})
 
-	set(RENDERER_VK_HOST_SHADERS_SOURCE
-		"src/host_shaders/vulkan_display.frag"
-		"src/host_shaders/vulkan_display.vert"
-	)
+    set(RENDERER_VK_HOST_SHADERS_SOURCE
+        "src/host_shaders/vulkan_display.frag"
+        "src/host_shaders/vulkan_display.vert"
+    )
 
     set(RENDERER_VK_HOST_SHADERS_FLAGS -e main --target-env vulkan1.1)
 
@@ -383,129 +368,154 @@ if(ENABLE_VULKAN)
 
     # Compile each vulkan shader into an .spv file
     foreach( HOST_SHADER_SOURCE ${RENDERER_VK_HOST_SHADERS_SOURCE} )
-		get_filename_component( FILE_NAME ${HOST_SHADER_SOURCE} NAME )
-		set( HOST_SHADER_SPIRV "${PROJECT_BINARY_DIR}/host_shaders/${FILE_NAME}.spv" )
-	    add_custom_command(
-		    OUTPUT ${HOST_SHADER_SPIRV}
-		    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/host_shaders/"
-		    COMMAND Vulkan::glslangValidator ${RENDERER_VK_HOST_SHADERS_FLAGS} -V "${PROJECT_SOURCE_DIR}/${HOST_SHADER_SOURCE}" -o ${HOST_SHADER_SPIRV}
-		    DEPENDS ${HOST_SHADER_SOURCE}
-	    )
-	    list( APPEND RENDERER_VK_HOST_SHADERS_SPIRV ${HOST_SHADER_SPIRV} )
+        get_filename_component( FILE_NAME ${HOST_SHADER_SOURCE} NAME )
+        set( HOST_SHADER_SPIRV "${PROJECT_BINARY_DIR}/host_shaders/${FILE_NAME}.spv" )
+        add_custom_command(
+            OUTPUT ${HOST_SHADER_SPIRV}
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/host_shaders/"
+            COMMAND Vulkan::glslangValidator ${RENDERER_VK_HOST_SHADERS_FLAGS} -V "${PROJECT_SOURCE_DIR}/${HOST_SHADER_SOURCE}" -o ${HOST_SHADER_SPIRV}
+            DEPENDS ${HOST_SHADER_SOURCE}
+        )
+        list( APPEND RENDERER_VK_HOST_SHADERS_SPIRV ${HOST_SHADER_SPIRV} )
     endforeach()
 
-	cmrc_add_resource_library(
-		resources_renderer_vk
-		NAMESPACE RendererVK
-		WHENCE "${PROJECT_BINARY_DIR}/host_shaders/"
-		${RENDERER_VK_HOST_SHADERS_SPIRV}
-	)
+    cmrc_add_resource_library(
+        resources_renderer_vk
+        NAMESPACE RendererVK
+        WHENCE "${PROJECT_BINARY_DIR}/host_shaders/"
+        ${RENDERER_VK_HOST_SHADERS_SPIRV}
+    )
+
+    target_sources(AlberCore PRIVATE ${RENDERER_VK_SOURCE_FILES})
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_ENABLE_VULKAN=1")
+    target_link_libraries(AlberCore PRIVATE Vulkan::Vulkan resources_renderer_vk)
 endif()
 
 source_group("Header Files\\Core" FILES ${HEADER_FILES})
-set(ALL_SOURCES ${SOURCE_FILES} ${FRONTEND_SOURCE_FILES} ${FS_SOURCE_FILES} ${CRYPTO_SOURCE_FILES} ${KERNEL_SOURCE_FILES} 
+set(ALL_SOURCES ${SOURCE_FILES} ${FS_SOURCE_FILES} ${CRYPTO_SOURCE_FILES} ${KERNEL_SOURCE_FILES} 
     ${LOADER_SOURCE_FILES} ${SERVICE_SOURCE_FILES} ${APPLET_SOURCE_FILES} ${RENDERER_SW_SOURCE_FILES} ${PICA_SOURCE_FILES} ${THIRD_PARTY_SOURCE_FILES}
     ${AUDIO_SOURCE_FILES} ${HEADER_FILES} ${FRONTEND_HEADER_FILES})
+target_sources(AlberCore PRIVATE ${ALL_SOURCES})
 
-if(ENABLE_OPENGL)
-    # Add the OpenGL source files to ALL_SOURCES
-    set(ALL_SOURCES ${ALL_SOURCES} ${RENDERER_GL_SOURCE_FILES})
+target_link_libraries(AlberCore PRIVATE dynarmic cryptopp glad resources_console_fonts teakra)
+target_link_libraries(AlberCore PUBLIC glad)
+
+if(ENABLE_DISCORD_RPC AND NOT ANDROID)
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_ENABLE_DISCORD_RPC=1")
+    target_link_libraries(AlberCore PRIVATE discord-rpc)
 endif()
 
-if(ENABLE_VULKAN)
-    # Add the Vulkan source files to ALL_SOURCES
-    set(ALL_SOURCES ${ALL_SOURCES} ${RENDERER_VK_SOURCE_FILES})
+if(GPU_DEBUG_INFO)
+    target_compile_definitions(AlberCore PRIVATE GPU_DEBUG_INFO=1)
 endif()
 
-if(ANDROID)
-    set(ALL_SOURCES ${ALL_SOURCES} src/jni_driver.cpp)
+if(ENABLE_USER_BUILD)
+    target_compile_definitions(AlberCore PRIVATE PANDA3DS_USER_BUILD=1)
 endif()
 
-if(BUILD_HYDRA_CORE)
-    include_directories(third_party/hydra_core/include)
-    add_library(Alber SHARED ${ALL_SOURCES} src/hydra_core.cpp)
-    target_compile_definitions(Alber PRIVATE PANDA3DS_HYDRA_CORE=1)
+if(ENABLE_USER_BUILD OR DISABLE_PANIC_DEV)
+    target_compile_definitions(AlberCore PRIVATE PANDA3DS_LIMITED_PANICS=1)
+endif()
+
+if(ENABLE_HTTP_SERVER)
+    target_compile_definitions(AlberCore PRIVATE PANDA3DS_ENABLE_HTTP_SERVER=1)
+endif()
+
+# Configure frontend
+
+if(ENABLE_QT_GUI)
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_FRONTEND_QT=1")
 else()
-    add_executable(Alber ${ALL_SOURCES})
+    target_compile_definitions(AlberCore PUBLIC "PANDA3DS_FRONTEND_SDL=1")
 endif()
 
-if(ANDROID)
-    target_link_libraries(Alber PRIVATE EGL log)
+if(NOT BUILD_HYDRA_CORE)
+    add_executable(Alber)
+
+    if(ENABLE_QT_GUI)
+        find_package(Qt6 REQUIRED COMPONENTS Widgets)
+        if(NOT ENABLE_OPENGL)
+            message(FATAL_ERROR "Qt frontend requires OpenGL")
+        endif()
+
+        set(FRONTEND_SOURCE_FILES src/panda_qt/main.cpp src/panda_qt/screen.cpp src/panda_qt/main_window.cpp src/panda_qt/about_window.cpp
+            src/panda_qt/config_window.cpp src/panda_qt/zep.cpp src/panda_qt/text_editor.cpp src/panda_qt/cheats_window.cpp
+        )   
+        set(FRONTEND_HEADER_FILES include/panda_qt/screen.hpp include/panda_qt/main_window.hpp include/panda_qt/about_window.hpp
+            include/panda_qt/config_window.hpp include/panda_qt/text_editor.hpp include/panda_qt/cheats_window.hpp
+        )
+
+        source_group("Source Files\\Qt" FILES ${FRONTEND_SOURCE_FILES})
+        source_group("Header Files\\Qt" FILES ${FRONTEND_HEADER_FILES})
+        include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+
+        include_directories(third_party/zep/include) # Include zep for text editor usage
+        configure_file(third_party/zep/cmake/config_app.h.cmake ${CMAKE_BINARY_DIR}/zep_config/config_app.h)
+        include_directories(${CMAKE_BINARY_DIR}/zep_config)
+
+        target_compile_definitions(Alber PUBLIC "ZEP_QT=1")
+        target_compile_definitions(Alber PUBLIC "ZEP_FEATURE_CPP_FILE_SYSTEM=1")
+        target_link_libraries(Alber PRIVATE Qt6::Widgets)
+
+        # We can't use qt_standard_project_setup since it's Qt 6.3+ and we don't need to set the minimum that high
+        set_target_properties(Alber PROPERTIES AUTOMOC ON)
+        set_target_properties(Alber PROPERTIES AUTORCC ON)
+        set_target_properties(Alber PROPERTIES AUTOUIC ON)
+
+        if(LINUX OR FREEBSD)
+            find_package(X11 REQUIRED)
+            target_link_libraries(Alber PRIVATE ${X11_LIBRARIES})
+
+            if(ENABLE_OPENGL)
+                find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL GLX)
+                target_link_libraries(Alber PRIVATE OpenGL::OpenGL OpenGL::EGL OpenGL::GLX)
+            endif()
+        endif()
+
+        qt_add_resources(AlberCore "app_images"
+            PREFIX "/"
+            FILES
+                docs/img/rsob_icon.png docs/img/rstarstruck_icon.png
+        )
+    else()
+        set(FRONTEND_SOURCE_FILES src/panda_sdl/main.cpp src/panda_sdl/frontend_sdl.cpp)
+        set(FRONTEND_HEADER_FILES "")
+    endif()
+
+    target_link_libraries(Alber PRIVATE AlberCore)
+    target_sources(Alber PRIVATE ${FRONTEND_SOURCE_FILES} ${FRONTEND_HEADER_FILES})
+elseif(BUILD_HYDRA_CORE)
+    target_compile_definitions(AlberCore PRIVATE PANDA3DS_HYDRA_CORE=1)
+    include_directories(third_party/hydra_core/include)
+    add_library(Alber SHARED src/hydra_core.cpp)
+    target_link_libraries(Alber PUBLIC AlberCore)
 endif()
 
 if(ENABLE_LTO OR ENABLE_USER_BUILD)
     set_target_properties(Alber PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-target_link_libraries(Alber PRIVATE dynarmic cryptopp glad resources_console_fonts teakra)
+if(ENABLE_TESTS)
+    enable_testing()
 
-if(NOT ANDROID)
-    target_link_libraries(Alber PRIVATE SDL2-static)
-endif()
-
-if(ENABLE_DISCORD_RPC AND NOT ANDROID)
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_ENABLE_DISCORD_RPC=1")
-    target_link_libraries(Alber PRIVATE discord-rpc)
-endif()
-
-if(ENABLE_LUAJIT)
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_ENABLE_LUA=1")
-    target_link_libraries(Alber PRIVATE libluajit)
-
-    # If we're not on Android, link libuv too
-    if (NOT ANDROID)
-        target_link_libraries(Alber PRIVATE uv_a)
-    endif()
-endif()
-
-if(ENABLE_OPENGL)
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_ENABLE_OPENGL=1")
-    target_link_libraries(Alber PRIVATE resources_renderer_gl)
-endif()
-
-if(ENABLE_VULKAN)
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_ENABLE_VULKAN=1")
-    target_link_libraries(Alber PRIVATE Vulkan::Vulkan resources_renderer_vk)
-endif()
-
-if(ENABLE_QT_GUI)
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_FRONTEND_QT=1")
-    target_compile_definitions(Alber PUBLIC "ZEP_QT=1")
-    target_compile_definitions(Alber PUBLIC "ZEP_FEATURE_CPP_FILE_SYSTEM=1")
-
-    target_link_libraries(Alber PRIVATE Qt6::Widgets)
-
-    if(LINUX OR FREEBSD)
-        find_package(X11 REQUIRED)
-        target_link_libraries(Alber PRIVATE ${X11_LIBRARIES})
-
-        if(ENABLE_OPENGL)
-            find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL GLX)
-            target_link_libraries(Alber PRIVATE OpenGL::OpenGL OpenGL::EGL OpenGL::GLX)
-        endif()
+    find_package(Catch2 3)
+    if(NOT Catch2_FOUND)
+        add_subdirectory(third_party/Catch2)
     endif()
 
-    qt_add_resources(Alber "app_images"
-        PREFIX "/"
-        FILES
-            docs/img/rsob_icon.png docs/img/rstarstruck_icon.png
+    add_library(nihstro-headers INTERFACE)
+    target_include_directories(nihstro-headers SYSTEM INTERFACE ./third_party/nihstro/include)
+
+    add_executable(AlberTests
+        tests/shader.cpp
     )
-else()
-    target_compile_definitions(Alber PUBLIC "PANDA3DS_FRONTEND_SDL=1")
-endif()
+    target_link_libraries(
+        AlberTests
+        PRIVATE
+        Catch2::Catch2WithMain
+        AlberCore
+        nihstro-headers
+    )
 
-if(GPU_DEBUG_INFO)
-    target_compile_definitions(Alber PRIVATE GPU_DEBUG_INFO=1)
-endif()
-
-if(ENABLE_USER_BUILD)
-    target_compile_definitions(Alber PRIVATE PANDA3DS_USER_BUILD=1)
-endif()
-
-if(ENABLE_USER_BUILD OR DISABLE_PANIC_DEV)
-    target_compile_definitions(Alber PRIVATE PANDA3DS_LIMITED_PANICS=1)
-endif()
-
-if(ENABLE_HTTP_SERVER)
-    target_compile_definitions(Alber PRIVATE PANDA3DS_ENABLE_HTTP_SERVER=1)
+    add_test(AlberTests AlberTests)
 endif()
