@@ -91,37 +91,15 @@
             android:textStyle="bold"
             android:layout_marginTop="20dp" />
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/import_save"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="0dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/import_save"
-                style="@style/Widget.Material3.Button.TonalButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/import_save"
-                android:text="@string/import_save"
-                app:icon="@drawable/ic_add"
-                app:iconTint="?colorOnSurfaceVariant"
-                android:textColor="?colorOnSurfaceVariant"
-                android:backgroundTint="?colorSurfaceVariant" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/export_save"
-                style="@style/Widget.Material3.Button.TonalButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:contentDescription="@string/export_save"
-                android:text="@string/export_save"
-                app:icon="@drawable/ic_share"
-                app:iconTint="?colorOnSurfaceVariant"
-                android:textColor="?colorOnSurfaceVariant"
-                android:backgroundTint="?colorSurfaceVariant"/>
-        </LinearLayout>
+            android:contentDescription="@string/manage_save"
+            android:text="@string/manage_save"
+            android:textSize="15sp"
+            android:textColor="?colorOnSurfaceVariant" />
     </LinearLayout>
 
     <LinearLayout
