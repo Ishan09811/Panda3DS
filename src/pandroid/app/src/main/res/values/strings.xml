@@ -87,6 +87,7 @@
     <string name="save_management">Save Management</string>
     <string name="import_save">Import</string>
     <string name="export_save">Export</string>
+    <string name="manage_save">Manage Save Data</string>
     <!-- Game Menu -->
     <string name="actions">Actions</string>
     <string name="resume">Resume</string>
