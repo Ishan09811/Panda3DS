@@ -104,7 +104,10 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/import_save"
                 android:text="@string/import_save"
-                app:icon="@drawable/ic_add" />
+                app:icon="@drawable/ic_add"
+                app:iconTint="?colorOnSurfaceVariant"
+                android:textColor="?colorOnSurfaceVariant"
+                android:backgroundTint="?colorSurfaceVariant" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/export_save"
@@ -114,7 +117,10 @@
                 android:layout_marginStart="8dp"
                 android:contentDescription="@string/export_save"
                 android:text="@string/export_save"
-                app:icon="@drawable/ic_share" />
+                app:icon="@drawable/ic_share"
+                app:iconTint="?colorOnSurfaceVariant"
+                android:textColor="?colorOnSurfaceVariant"
+                android:backgroundTint="?colorSurfaceVariant"/>
         </LinearLayout>
     </LinearLayout>
 
