@@ -93,7 +93,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/manage_save"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Material3.Button.TextButton.Dialog.FullWidth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/manage_save"
