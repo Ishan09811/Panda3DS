@@ -81,24 +81,6 @@
             android:text="@string/app_name"
             android:alpha="0.76"
             android:textSize="15sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/save_management"
-            android:textAllCaps="true"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp" />
-
-        <TextView
-            android:id="@+id/manage_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/manage_save"
-            android:text="@string/manage_save"
-            android:textSize="15sp"
-            android:textColor="?colorOnSurfaceVariant" />
     </LinearLayout>
 
     <LinearLayout
@@ -108,6 +90,18 @@
         android:paddingHorizontal="10dp"
         android:layout_marginVertical="10dp"
         android:gravity="end|center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/play"
+            android:paddingHorizontal="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/play"
+            android:textColor="?colorOnPrimary"
+            android:backgroundTint="?colorPrimary"
+            app:icon="@drawable/ic_play"
+            app:rippleColor="?colorOnPrimary"
+            app:iconTint="?colorOnPrimary"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/shortcut"
@@ -131,17 +125,32 @@
             android:layout_marginHorizontal="10dp"
             style="@style/Widget.Material3.Button.IconButton"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/save_management"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save_management"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/play"
-            android:paddingHorizontal="20dp"
+            android:id="@+id/manage_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/play"
-            android:textColor="?colorOnPrimary"
-            android:backgroundTint="?colorPrimary"
-            app:icon="@drawable/ic_play"
-            app:rippleColor="?colorOnPrimary"
-            app:iconTint="?colorOnPrimary"/>
+            android:text="@string/manage_save"
+            app:icon="@drawable/ic_shortcut"
+            app:iconTint="?colorOnSurfaceVariant"
+            android:textColor="?colorOnSurfaceVariant"
+            android:backgroundTint="?colorSurfaceVariant"
+            style="@style/Widget.Material3.Button.TonalButton.Icon"/>
 
     </LinearLayout>
 </LinearLayout>
