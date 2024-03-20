@@ -47,6 +47,10 @@ public class GameAboutDialog extends BaseSheetDialog {
             dismiss();
             makeShortcut();
         });
+        findViewById(R.id.export_save).setOnClickListener(v -> {
+            String appPath = FileUtils.getPrivatePath();
+            
+        });
 
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);
