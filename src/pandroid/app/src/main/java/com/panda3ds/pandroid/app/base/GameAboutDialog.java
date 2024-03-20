@@ -19,6 +19,7 @@ import com.panda3ds.pandroid.app.game.GameLauncher;
 import com.panda3ds.pandroid.data.game.GameMetadata;
 import com.panda3ds.pandroid.utils.CompatUtils;
 import com.panda3ds.pandroid.utils.FileUtils;
+import com.panda3ds.pandroid.utils.ZipBuilder;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
 
