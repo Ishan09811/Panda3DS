@@ -50,7 +50,7 @@ public class GameAboutDialog extends BaseSheetDialog {
         });
         findViewById(R.id.export_save).setOnClickListener(v -> {
             String inputPath = FileUtils.getPrivatePath() + game.getTitle() + "/SaveData";
-            String outputPath = "/storage/emulated/0/";
+            String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
             String outputName = "export.zip";
 
             // Create an instance of ZipBuilder
