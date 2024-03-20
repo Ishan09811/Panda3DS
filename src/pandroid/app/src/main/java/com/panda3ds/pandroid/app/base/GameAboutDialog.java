@@ -48,7 +48,27 @@ public class GameAboutDialog extends BaseSheetDialog {
             makeShortcut();
         });
         findViewById(R.id.export_save).setOnClickListener(v -> {
-            String appPath = FileUtils.getPrivatePath();
+            String inputPath = FileUtils.getPrivatePath() + game.getTitle() + "/SaveData";
+            String outputPath = "/storage/emulated/0/";
+            String outputName = "export.zip";
+
+            // Create an instance of ZipBuilder
+            ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
+
+            try {
+              // Begin the zip file creation process
+              zipBuilder.begin();
+
+              // Append files or folders to the zip file
+              zipBuilder.append(inputPath);
+
+              // End the zip file creation process
+              zipBuilder.end();
+
+              System.out.println("Zip file created successfully.");
+            } catch (Exception e) {
+              System.err.println("Error creating zip file: " + e.getMessage());
+           }
             
         });
 
