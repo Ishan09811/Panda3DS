@@ -49,7 +49,7 @@ public class GameAboutDialog extends BaseSheetDialog {
             makeShortcut();
         });
         findViewById(R.id.export_save).setOnClickListener(v -> {
-            String inputPath = FileUtils.getPrivatePath() + "/" + game.getTitle() + "/SaveData";
+            String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()) + "/SaveData/";
             String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
             String outputName = "export.zip";
 
