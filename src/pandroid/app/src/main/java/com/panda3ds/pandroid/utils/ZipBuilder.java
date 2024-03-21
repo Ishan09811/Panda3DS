@@ -45,7 +45,7 @@ public class ZipBuilder {
             byte[] buffer = new byte[1024 * 64];
             int len;
             while ((len = input.read(buffer)) != -1) {
-                output.write(buffer, 0, len);
+                zip.write(buffer, 0, len);
             }
             input.close();
             zip.flush();
