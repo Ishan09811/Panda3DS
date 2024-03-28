@@ -22,6 +22,7 @@ import com.panda3ds.pandroid.utils.FileUtils;
 import com.panda3ds.pandroid.utils.ZipBuilder;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
+import com.panda3ds.pandroid.lang.Task;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
