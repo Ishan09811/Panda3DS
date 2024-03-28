@@ -57,7 +57,7 @@ public class GameAboutDialog extends BaseSheetDialog {
             ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
 
             
-        new Task(()->{
+         new Task(()->{
             try {
               // Begin the zip file creation process
               zipBuilder.begin();
@@ -72,9 +72,8 @@ public class GameAboutDialog extends BaseSheetDialog {
             } catch (Exception e) {
               System.err.println("Error creating zip file: " + e.getMessage());
            }
-            
+         }).start();
         });
-    }).start();
 
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);
