@@ -34,7 +34,7 @@ public class ZipBuilder {
         String name = FileUtils.getName(path);
         if (FileUtils.isDirectory(path)) {
             for (String child : FileUtils.listFiles(path)) {
-                append(path + "/" + child, parent + "/" + child);
+                append(path + "/" + child, parent + "/" + name);
             }
         } else {
             ZipEntry entry = new ZipEntry((parent + "/" + name).replaceAll("//", "/"));
