@@ -101,11 +101,7 @@ public class GameAboutDialog extends BaseSheetDialog {
         intent.setType(mimeType);
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
         intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
-        if (context instanceof AppCompatActivity) {
-            ((AppCompatActivity) context).startActivityForResult(intent, 1);
-        } else {
-            // Do Nothing
-        }
+        startActivityForResult(intent, 1);
     }
 
     // Make a shortcut for a specific game
