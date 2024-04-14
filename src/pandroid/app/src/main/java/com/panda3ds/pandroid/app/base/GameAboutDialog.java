@@ -12,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
+import android.provider.DocumentsContract;
 
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.PandroidApplication;
@@ -24,6 +26,7 @@ import com.panda3ds.pandroid.utils.ZipBuilder;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
 import com.panda3ds.pandroid.lang.Task;
+import java.io.File;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
@@ -98,7 +101,11 @@ public class GameAboutDialog extends BaseSheetDialog {
         intent.setType(mimeType);
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
         intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
-        startActivityForResult(intent, 1);
+        if (context instanceof AppCompatActivity) {
+            ((AppCompatActivity) context).startActivityForResult(intent, 1);
+        } else {
+            // Do Nothing
+        }
     }
 
     // Make a shortcut for a specific game
