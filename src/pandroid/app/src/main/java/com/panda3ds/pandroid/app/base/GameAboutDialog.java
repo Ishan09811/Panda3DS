@@ -58,6 +58,7 @@ public class GameAboutDialog extends BaseSheetDialog {
             String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/SaveData/";
             String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
             String outputName = game.getTitle() + ".zip";
+            String zipPath = outputPath + outputName;
 
             // Create an instance of ZipBuilder
             ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
@@ -75,7 +76,7 @@ public class GameAboutDialog extends BaseSheetDialog {
               zipBuilder.end();
 
               System.out.println("Zip file created successfully.");
-              createDocument(getContext(), MIME_TYPE_ZIP, outputName, outputPath);
+              createDocument(getContext(), MIME_TYPE_ZIP, outputName, zipPath);
             } catch (Exception e) {
               System.err.println("Error creating zip file: " + e.getMessage());
            }
