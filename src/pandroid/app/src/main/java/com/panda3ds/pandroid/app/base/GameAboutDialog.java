@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.PandroidApplication;
@@ -26,6 +27,7 @@ import com.panda3ds.pandroid.lang.Task;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
+    private static final String MIME_TYPE_ZIP = "application/zip";
     public GameAboutDialog(@NonNull Context context, GameMetadata game) {
         super(context);
         this.game = game;
@@ -52,7 +54,7 @@ public class GameAboutDialog extends BaseSheetDialog {
         findViewById(R.id.export_save).setOnClickListener(v -> {
             String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/SaveData/";
             String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
-            String outputName = "export.zip";
+            String outputName = game.getTitle() + ".zip";
 
             // Create an instance of ZipBuilder
             ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
@@ -70,11 +72,21 @@ public class GameAboutDialog extends BaseSheetDialog {
               zipBuilder.end();
 
               System.out.println("Zip file created successfully.");
+              createDocument(MIME_TYPE_ZIP, outputName, outputPath);
             } catch (Exception e) {
               System.err.println("Error creating zip file: " + e.getMessage());
            }
          }).start();
         });
+
+        private void createDocument(@NonNull String mimeType, String fileName, String outputDirPath) {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType(mimeType);
+            intent.putExtra(Intent.EXTRA_TITLE, fileName);
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
+            startActivityForResult(intent, 1);
+        }
 
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);
