@@ -75,7 +75,7 @@ public class GameAboutDialog extends BaseSheetDialog {
               zipBuilder.end();
 
               System.out.println("Zip file created successfully.");
-              createDocument(MIME_TYPE_ZIP, outputName, outputPath);
+              createDocument(getContext(), MIME_TYPE_ZIP, outputName, outputPath);
             } catch (Exception e) {
               System.err.println("Error creating zip file: " + e.getMessage());
            }
@@ -95,7 +95,7 @@ public class GameAboutDialog extends BaseSheetDialog {
         }
     }
 
-    private void createDocument(@NonNull String mimeType, String fileName, String outputDirPath) {
+    private void createDocument(Context context, @NonNull String mimeType, String fileName, String outputDirPath) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
