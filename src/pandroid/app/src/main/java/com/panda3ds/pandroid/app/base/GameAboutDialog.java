@@ -79,15 +79,6 @@ public class GameAboutDialog extends BaseSheetDialog {
          }).start();
         });
 
-        private void createDocument(@NonNull String mimeType, String fileName, String outputDirPath) {
-            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType(mimeType);
-            intent.putExtra(Intent.EXTRA_TITLE, fileName);
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
-            startActivityForResult(intent, 1);
-        }
-
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);
         } else {
@@ -99,6 +90,15 @@ public class GameAboutDialog extends BaseSheetDialog {
                 GameUtils.removeGame(game);
             });
         }
+    }
+
+    private void createDocument(@NonNull String mimeType, String fileName, String outputDirPath) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
+        startActivityForResult(intent, 1);
     }
 
     // Make a shortcut for a specific game
