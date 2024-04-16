@@ -13,9 +13,8 @@ import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.documentfile.provider.DocumentFile;
+import android.provider.DocumentsContract;
 
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.app.PandroidApplication;
@@ -31,8 +30,7 @@ import java.io.File;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
-    private final ActivityResultContracts.OpenDocumentTree openFolderContract = new ActivityResultContracts.OpenDocumentTree();
-    private ActivityResultLauncher<Uri> pickFolderRequest;
+    private static final String MIME_TYPE_ZIP = "application/zip";
     public GameAboutDialog(@NonNull Context context, GameMetadata game) {
         super(context);
         this.game = game;
@@ -42,7 +40,6 @@ public class GameAboutDialog extends BaseSheetDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_game_about);
-        pickFolderRequest = registerForActivityResult(openFolderContract, this);
 
         ((GameIconView) findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
         ((TextView) findViewById(R.id.game_title)).setText(game.getTitle());
@@ -58,7 +55,32 @@ public class GameAboutDialog extends BaseSheetDialog {
             makeShortcut();
         });
         findViewById(R.id.export_save).setOnClickListener(v -> {
-            pickFolderRequest.launch(null);
+            String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/SaveData/";
+            String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
+            String outputName = game.getTitle() + ".zip";
+            String zipPath = outputPath + outputName;
+
+            // Create an instance of ZipBuilder
+            ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
+
+            
+         new Task(()->{
+            try {
+              // Begin the zip file creation process
+              zipBuilder.begin();
+
+              // Append files or folders to the zip file
+              zipBuilder.append(inputPath);
+
+              // End the zip file creation process
+              zipBuilder.end();
+
+              System.out.println("Zip file created successfully.");
+              createDocument(getContext(), MIME_TYPE_ZIP, outputName, zipPath);
+            } catch (Exception e) {
+              System.err.println("Error creating zip file: " + e.getMessage());
+           }
+         }).start();
         });
 
         if (game.getRomPath().startsWith("folder:")) {
@@ -72,6 +94,15 @@ public class GameAboutDialog extends BaseSheetDialog {
                 GameUtils.removeGame(game);
             });
         }
+    }
+
+    private void createDocument(Context context, @NonNull String mimeType, String fileName, String outputDirPath) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.fromFile(new File(outputDirPath)));
+        context.startActivity(intent);
     }
 
     // Make a shortcut for a specific game
@@ -92,35 +123,5 @@ public class GameAboutDialog extends BaseSheetDialog {
         intent.setData(new Uri.Builder().scheme("pandroid-game").authority(game.getId()).build());
         shortcut.setIntent(intent);
         ShortcutManagerCompat.requestPinShortcut(context, shortcut.build(), null);
-    }
-
-    @Override
-    public void onActivityResult(Uri result) {
-        if (result != null) {
-            String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/SaveData/";
-            String outputPath = result.toString();
-            String outputName = game.getTitle() + ".zip";
-
-            // Create an instance of ZipBuilder
-            ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
-
-            
-           new Task(()->{
-              try {
-                // Begin the zip file creation process
-                zipBuilder.begin();
-
-                // Append files or folders to the zip file
-                zipBuilder.append(inputPath);
-
-                // End the zip file creation process
-                zipBuilder.end();
-
-                System.out.println("Zip file created successfully.");
-              } catch (Exception e) {
-                System.err.println("Error creating zip file: " + e.getMessage());
-             }
-           }).start();
-        }
     }
 }
