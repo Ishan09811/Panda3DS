@@ -5,6 +5,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
+import android.os.Handler;
+import android.text.TextUtils;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
 
