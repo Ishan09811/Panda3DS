@@ -13,6 +13,18 @@ class ItemHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
+    new Handler().postDelayed(new Runnable() {
+    @Override
+    public void run() {
+        // Set the ellipsize property and make the TextViews selectable to start the marquee
+        ((AppCompatTextView) itemView.findViewById(R.id.title)).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        ((AppCompatTextView) itemView.findViewById(R.id.title)).setSelected(true);
+
+        ((AppCompatTextView) itemView.findViewById(R.id.description)).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        ((AppCompatTextView) itemView.findViewById(R.id.description)).setSelected(true);
+    }
+}, 3000);
+
     public void apply(GameMetadata game) {
         ((AppCompatTextView) itemView.findViewById(R.id.title))
                 .setText(game.getTitle());
