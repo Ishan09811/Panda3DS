@@ -24,11 +24,17 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?colorOnSurface"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true" 
+        android:scrollHorizontally="true"
         android:text="@string/app_name"
         android:textStyle="bold"
         android:textSize="14sp"
@@ -39,6 +45,12 @@
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true" 
+        android:scrollHorizontally="true"
         android:text="@string/app_name"
         android:textSize="11sp"
         android:alpha="0.75"
