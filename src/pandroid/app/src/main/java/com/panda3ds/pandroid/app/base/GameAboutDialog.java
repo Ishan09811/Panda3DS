@@ -23,6 +23,9 @@ import com.panda3ds.pandroid.utils.ZipBuilder;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
 import com.panda3ds.pandroid.lang.Task;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import java.io.File;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
@@ -75,6 +78,44 @@ public class GameAboutDialog extends BaseSheetDialog {
            }
          }).start();
         });
+
+        findViewById(R.id.import_save).setOnClickListener(v -> {
+            String outputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/";
+            
+            ZipExtractor zipExtractor = new ZipExtractor;
+
+            JFrame frame = new JFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(300, 200);
+            frame.setVisible(true);
+            
+            JFileChooser fileChooser = new JFileChooser();
+
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+            int returnValue = fileChooser.showOpenDialog(frame);
+        
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                String selectedFilePath = selectedFile.getAbsolutePath();
+                new Task(()->{
+                   try {
+                     ZipExtractor.extract(selectedFilePath, outputPath, "SaveData")
+
+                     System.out.println("Zip file extracted successfully.");
+                   } catch (Exception e) {
+                     System.err.println("Error extracting zip file: " + e.getMessage());
+                   }
+                }).start();         
+                System.out.println("Selected file path: " + selectedFilePath);
+            } else {
+                System.out.println("No file selected");
+            }
+            
+            // Dispose of the JFrame
+            frame.dispose();
+        });
+            
 
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);
