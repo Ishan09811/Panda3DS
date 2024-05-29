@@ -19,8 +19,13 @@ import com.panda3ds.pandroid.app.game.GameLauncher;
 import com.panda3ds.pandroid.data.game.GameMetadata;
 import com.panda3ds.pandroid.utils.CompatUtils;
 import com.panda3ds.pandroid.utils.FileUtils;
+import com.panda3ds.pandroid.utils.ZipBuilder;
 import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
+import com.panda3ds.pandroid.lang.Task;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import java.io.File;
 
 public class GameAboutDialog extends BaseSheetDialog {
     private final GameMetadata game;
@@ -47,6 +52,70 @@ public class GameAboutDialog extends BaseSheetDialog {
             dismiss();
             makeShortcut();
         });
+        findViewById(R.id.export_save).setOnClickListener(v -> {
+            String inputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/SaveData/";
+            String outputPath = "/storage/emulated/0/Android/media/com.panda3ds.pandroid/";
+            String outputName = "export.zip";
+
+            // Create an instance of ZipBuilder
+            ZipBuilder zipBuilder = new ZipBuilder(outputPath, outputName);
+
+            
+         new Task(()->{
+            try {
+              // Begin the zip file creation process
+              zipBuilder.begin();
+
+              // Append files or folders to the zip file
+              zipBuilder.append(inputPath);
+
+              // End the zip file creation process
+              zipBuilder.end();
+
+              System.out.println("Zip file created successfully.");
+            } catch (Exception e) {
+              System.err.println("Error creating zip file: " + e.getMessage());
+           }
+         }).start();
+        });
+
+        findViewById(R.id.import_save).setOnClickListener(v -> {
+            String outputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/";
+            
+            ZipExtractor zipExtractor = new ZipExtractor();
+
+            JFrame frame = new JFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(300, 200);
+            frame.setVisible(true);
+            
+            JFileChooser fileChooser = new JFileChooser();
+
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+            int returnValue = fileChooser.showOpenDialog(frame);
+        
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                String selectedFilePath = selectedFile.getAbsolutePath();
+                new Task(()->{
+                   try {
+                     ZipExtractor.extract(selectedFilePath, outputPath, "SaveData");
+
+                     System.out.println("Zip file extracted successfully.");
+                   } catch (Exception e) {
+                     System.err.println("Error extracting zip file: " + e.getMessage());
+                   }
+                }).start();         
+                System.out.println("Selected file path: " + selectedFilePath);
+            } else {
+                System.out.println("No file selected");
+            }
+            
+            // Dispose of the JFrame
+            frame.dispose();
+        });
+            
 
         if (game.getRomPath().startsWith("folder:")) {
             findViewById(R.id.remove).setVisibility(View.GONE);

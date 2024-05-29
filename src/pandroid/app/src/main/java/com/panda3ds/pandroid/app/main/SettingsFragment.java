@@ -22,7 +22,7 @@ public class SettingsFragment extends BasePreferenceFragment {
         setItemClick("general", (item)-> PreferenceActivity.launch(requireContext(), GeneralPreferences.class));
         setItemClick("advanced", (item)-> PreferenceActivity.launch(requireContext(), AdvancedPreferences.class));
     }
-
+    
     private String getVersionName() {
         try {
             Context context = PandroidApplication.getAppContext();

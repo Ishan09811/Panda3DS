@@ -2,11 +2,7 @@ package com.panda3ds.pandroid.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
-import android.provider.DocumentsContract;
-import android.system.Os;
 import android.util.Log;
 
 import androidx.documentfile.provider.DocumentFile;
@@ -19,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 public class FileUtils {
     public static final String MODE_READ = "r";
@@ -39,6 +34,10 @@ public class FileUtils {
         }
         
         return singleFile;
+    }
+
+    public static long getLength(String path) {
+        return parseFile(path).length();
     }
 
     private static Context getContext() {
