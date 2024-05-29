@@ -82,7 +82,7 @@ public class GameAboutDialog extends BaseSheetDialog {
         findViewById(R.id.import_save).setOnClickListener(v -> {
             String outputPath = FileUtils.getPrivatePath() + "/" + FileUtils.getName(game.getRealPath()).replaceAll("\\..*", "") + "/";
             
-            ZipExtractor zipExtractor = new ZipExtractor;
+            ZipExtractor zipExtractor = new ZipExtractor();
 
             JFrame frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -100,7 +100,7 @@ public class GameAboutDialog extends BaseSheetDialog {
                 String selectedFilePath = selectedFile.getAbsolutePath();
                 new Task(()->{
                    try {
-                     ZipExtractor.extract(selectedFilePath, outputPath, "SaveData")
+                     ZipExtractor.extract(selectedFilePath, outputPath, "SaveData");
 
                      System.out.println("Zip file extracted successfully.");
                    } catch (Exception e) {
