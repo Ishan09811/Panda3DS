@@ -30,6 +30,12 @@ jobs:
         vulkan-use-cache: true
         vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Tools, Glslang
 
+    - name: Add Vulkan SDK to PATH
+      run: echo "::add-path::${VULKAN_SDK}/Bin"
+
+    - name: Verify glslangValidator installation
+      run: glslangValidator --version
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
