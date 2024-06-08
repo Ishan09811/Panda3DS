@@ -36,11 +36,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Windows core
-        path: '${{github.workspace}}/build/Release/Alber.dll'
+        path: '${{github.workspace}}/build/${{ env.BUILD_TYPE }}/Alber.dll'
 
 
   MacOS:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
     - uses: actions/checkout@v2

@@ -119,9 +119,17 @@ u8 PICAShader::getIndexedSource(u32 source, u32 index) {
 		return source;
 
 	switch (index) {
-		case 0: [[likely]] return u8(source);  // No offset applied
-		case 1: return u8(source + addrRegister[0]);
-		case 2: return u8(source + addrRegister[1]);
+		// No offset applied
+		case 0: [[likely]] return u8(source);
+		// Address register
+		case 1:
+		case 2: {
+			const s32 offset = addrRegister[index - 1];
+			if (offset < -128 || offset > 127) [[unlikely]] {
+				return u8(source);
+			}
+			return u8(source + offset);
+		}
 		case 3: return u8(source + loopCounter);
 	}
 
@@ -130,15 +138,16 @@ u8 PICAShader::getIndexedSource(u32 source, u32 index) {
 }
 
 PICAShader::vec4f PICAShader::getSource(u32 source) {
-	if (source < 0x10)
+	if (source < 0x10) {
 		return inputs[source];
-	else if (source < 0x20)
+	} else if (source < 0x20) {
 		return tempRegisters[source - 0x10];
-	else if (source <= 0x7f)
-		return floatUniforms[source - 0x20];
-	else {
-		Helpers::warn("[PICA] Unimplemented source value: %X\n", source);
-		return vec4f({f24::zero(), f24::zero(), f24::zero(), f24::zero()});
+	} else {
+		const usize floatIndex = (source - 0x20) & 0x7f;
+		if (floatIndex >= 96) [[unlikely]] {
+			return vec4f({f24::fromFloat32(1.0f), f24::fromFloat32(1.0f), f24::fromFloat32(1.0f), f24::fromFloat32(1.0f)});
+		}
+		return floatUniforms[floatIndex];
 	}
 }
 
@@ -223,7 +232,7 @@ void PICAShader::flr(u32 instruction) {
 	u32 componentMask = operandDescriptor & 0xf;
 	for (int i = 0; i < 4; i++) {
 		if (componentMask & (1 << i)) {
-			destVector[3 - i] = f24::fromFloat32(std::floor(srcVector[3 - 1].toFloat32()));
+			destVector[3 - i] = f24::fromFloat32(std::floor(srcVector[3 - i].toFloat32()));
 		}
 	}
 }
@@ -244,8 +253,12 @@ void PICAShader::max(u32 instruction) {
 	u32 componentMask = operandDescriptor & 0xf;
 	for (int i = 0; i < 4; i++) {
 		if (componentMask & (1 << i)) {
-			const auto maximum = srcVec1[3 - i] > srcVec2[3 - i] ? srcVec1[3 - i] : srcVec2[3 - i];
-			destVector[3 - i] = maximum;
+			const float inputA = srcVec1[3 - i].toFloat32();
+			const float inputB = srcVec2[3 - i].toFloat32();
+			// max(NaN, 2.f) -> NaN
+			// max(2.f, NaN) -> 2
+			const auto& maximum = std::isinf(inputB) ? inputB : std::max(inputB, inputA);
+			destVector[3 - i] = f24::fromFloat32(maximum);
 		}
 	}
 }
@@ -266,8 +279,12 @@ void PICAShader::min(u32 instruction) {
 	u32 componentMask = operandDescriptor & 0xf;
 	for (int i = 0; i < 4; i++) {
 		if (componentMask & (1 << i)) {
-			const auto mininum = srcVec1[3 - i] < srcVec2[3 - i] ? srcVec1[3 - i] : srcVec2[3 - i];
-			destVector[3 - i] = mininum;
+			const float inputA = srcVec1[3 - i].toFloat32();
+			const float inputB = srcVec2[3 - i].toFloat32();
+			// min(NaN, 2.f) -> NaN
+			// min(2.f, NaN) -> 2
+			const auto& mininum = std::min(inputB, inputA);
+			destVector[3 - i] = f24::fromFloat32(mininum);
 		}
 	}
 }
@@ -292,10 +309,10 @@ void PICAShader::mov(u32 instruction) {
 
 void PICAShader::mova(u32 instruction) {
 	const u32 operandDescriptor = operandDescriptors[instruction & 0x7f];
-	const u32 src = getBits<12, 7>(instruction);
+	u32 src = getBits<12, 7>(instruction);
 	const u32 idx = getBits<19, 2>(instruction);
 
-	if (idx) Helpers::panic("[PICA] MOVA: idx != 0");
+	src = getIndexedSource(src, idx);
 	vec4f srcVector = getSourceSwizzled<1>(src, operandDescriptor);
 
 	u32 componentMask = operandDescriptor & 0xf;
@@ -382,7 +399,11 @@ void PICAShader::rcp(u32 instruction) {
 	vec4f srcVec1 = getSourceSwizzled<1>(src1, operandDescriptor);
 
 	vec4f& destVector = getDest(dest);
-	f24 res = f24::fromFloat32(1.0f) / srcVec1[0];
+	float input = srcVec1[0].toFloat32();
+	if (input == -0.0f) {
+		input = 0.0f;
+	}
+	const f24 res = f24::fromFloat32(1.0f / input);
 
 	u32 componentMask = operandDescriptor & 0xf;
 	for (int i = 0; i < 4; i++) {
@@ -402,7 +423,11 @@ void PICAShader::rsq(u32 instruction) {
 	vec4f srcVec1 = getSourceSwizzled<1>(src1, operandDescriptor);
 
 	vec4f& destVector = getDest(dest);
-	f24 res = f24::fromFloat32(1.0f / std::sqrt(srcVec1[0].toFloat32()));
+	float input = srcVec1[0].toFloat32();
+	if (input == -0.0f) {
+		input = 0.0f;
+	}
+	const f24 res = f24::fromFloat32(1.0f / std::sqrt(input));
 
 	u32 componentMask = operandDescriptor & 0xf;
 	for (int i = 0; i < 4; i++) {

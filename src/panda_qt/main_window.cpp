@@ -8,8 +8,10 @@
 #include <fstream>
 
 #include "cheats.hpp"
+#include "input_mappings.hpp"
+#include "services/dsp.hpp"
 
-MainWindow::MainWindow(QApplication* app, QWidget* parent) : QMainWindow(parent), screen(this) {
+MainWindow::MainWindow(QApplication* app, QWidget* parent) : QMainWindow(parent), keyboardMappings(InputMappings::defaultKeyboardMappings()), screen(this) {
 	setWindowTitle("Alber");
 	// Enable drop events for loading ROMs
 	setAcceptDrops(true);
@@ -52,9 +54,14 @@ MainWindow::MainWindow(QApplication* app, QWidget* parent) : QMainWindow(parent)
 	auto dumpRomFSAction = toolsMenu->addAction(tr("Dump RomFS"));
 	auto luaEditorAction = toolsMenu->addAction(tr("Open Lua Editor"));
 	auto cheatsEditorAction = toolsMenu->addAction(tr("Open Cheats Editor"));
+	auto patchWindowAction = toolsMenu->addAction(tr("Open Patch Window"));
+	auto dumpDspFirmware = toolsMenu->addAction(tr("Dump loaded DSP firmware"));
+
 	connect(dumpRomFSAction, &QAction::triggered, this, &MainWindow::dumpRomFS);
 	connect(luaEditorAction, &QAction::triggered, this, &MainWindow::openLuaEditor);
 	connect(cheatsEditorAction, &QAction::triggered, this, &MainWindow::openCheatsEditor);
+	connect(patchWindowAction, &QAction::triggered, this, &MainWindow::openPatchWindow);
+	connect(dumpDspFirmware, &QAction::triggered, this, &MainWindow::dumpDspFirmware);
 
 	auto aboutAction = aboutMenu->addAction(tr("About Panda3DS"));
 	connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutMenu);
@@ -66,6 +73,7 @@ MainWindow::MainWindow(QApplication* app, QWidget* parent) : QMainWindow(parent)
 	aboutWindow = new AboutWindow(nullptr);
 	configWindow = new ConfigWindow(this);
 	cheatsEditor = new CheatsWindow(emu, {}, this);
+	patchWindow = new PatchWindow(this);
 	luaEditor = new TextEditorWindow(this, "script.lua", "");
 
 	auto args = QCoreApplication::arguments();
@@ -96,6 +104,8 @@ MainWindow::MainWindow(QApplication* app, QWidget* parent) : QMainWindow(parent)
 			Helpers::panic("Unsupported graphics backend for Qt frontend!");
 		}
 
+		// We have to initialize controllers on the same thread they'll be polled in
+		initControllers();
 		emuThreadMainLoop();
 	});
 }
@@ -116,6 +126,8 @@ void MainWindow::emuThreadMainLoop() {
 		}
 
 		emu->runFrame();
+		pollControllers();
+
 		if (emu->romType != ROMType::None) {
 			emu->getServiceManager().getHID().updateInputs(emu->getTicks());
 		}
@@ -138,8 +150,10 @@ void MainWindow::swapEmuBuffer() {
 }
 
 void MainWindow::selectROM() {
-	auto path =
-		QFileDialog::getOpenFileName(this, tr("Select 3DS ROM to load"), "", tr("Nintendo 3DS ROMs (*.3ds *.cci *.cxi *.app *.3dsx *.elf *.axf)"));
+	auto path = QFileDialog::getOpenFileName(
+		this, tr("Select 3DS ROM to load"), QString::fromStdU16String(emu->getConfig().defaultRomPath.u16string()),
+		tr("Nintendo 3DS ROMs (*.3ds *.cci *.cxi *.app *.3dsx *.elf *.axf)")
+	);
 
 	if (!path.isEmpty()) {
 		std::filesystem::path* p = new std::filesystem::path(path.toStdU16String());
@@ -234,6 +248,47 @@ void MainWindow::dumpRomFS() {
 	}
 }
 
+void MainWindow::dumpDspFirmware() {
+	auto file = QFileDialog::getSaveFileName(this, tr("Select file"), "", tr("DSP firmware file (*.cdc)"));
+
+	if (file.isEmpty()) {
+		return;
+	}
+	std::filesystem::path path(file.toStdU16String());
+
+	messageQueueMutex.lock();
+	auto res = emu->getServiceManager().getDSP().dumpComponent(path);
+	messageQueueMutex.unlock();
+
+	switch (res) {
+		case DSPService::ComponentDumpResult::Success: break;
+		case DSPService::ComponentDumpResult::NotLoaded: {
+			QMessageBox messageBox(
+				QMessageBox::Icon::Warning, tr("No DSP firmware loaded"),
+				tr("The currently loaded app has not uploaded a firmware to the DSP")
+			);
+
+			QAbstractButton* button = messageBox.addButton(tr("OK"), QMessageBox::ButtonRole::YesRole);
+			button->setIcon(QIcon(":/docs/img/rsob_icon.png"));
+			messageBox.exec();
+			break;
+		}
+
+		case DSPService::ComponentDumpResult::FileFailure: {
+			QMessageBox messageBox(
+				QMessageBox::Icon::Warning, tr("Failed to open output file"),
+				tr("The currently loaded DSP firmware could not be written to the selected file. Please make sure you have permission to access this "
+				   "file")
+			);
+
+			QAbstractButton* button = messageBox.addButton(tr("OK"), QMessageBox::ButtonRole::YesRole);
+			button->setIcon(QIcon(":/docs/img/rstarstruck_icon.png"));
+			messageBox.exec();
+			break;
+		}
+	}
+}
+
 void MainWindow::showAboutMenu() {
 	AboutWindow about(this);
 	about.exec();
@@ -241,6 +296,7 @@ void MainWindow::showAboutMenu() {
 
 void MainWindow::openLuaEditor() { luaEditor->show(); }
 void MainWindow::openCheatsEditor() { cheatsEditor->show(); }
+void MainWindow::openPatchWindow() { patchWindow->show(); }
 
 void MainWindow::dispatchMessage(const EmulatorMessage& message) {
 	switch (message.type) {
@@ -276,8 +332,21 @@ void MainWindow::dispatchMessage(const EmulatorMessage& message) {
 		case MessageType::Reset: emu->reset(Emulator::ReloadOption::Reload); break;
 		case MessageType::PressKey: emu->getServiceManager().getHID().pressKey(message.key.key); break;
 		case MessageType::ReleaseKey: emu->getServiceManager().getHID().releaseKey(message.key.key); break;
-		case MessageType::SetCirclePadX: emu->getServiceManager().getHID().setCirclepadX(message.circlepad.value); break;
-		case MessageType::SetCirclePadY: emu->getServiceManager().getHID().setCirclepadY(message.circlepad.value); break;
+
+		// Track whether we're controlling the analog stick with our controller and update the CirclePad X/Y values in HID
+		// Controllers are polled on the emulator thread, so this message type is only used when the circlepad is changed via keyboard input
+		case MessageType::SetCirclePadX: {
+			keyboardAnalogX = message.circlepad.value != 0;
+			emu->getServiceManager().getHID().setCirclepadX(message.circlepad.value);
+			break;
+		}
+
+		case MessageType::SetCirclePadY: {
+			keyboardAnalogY = message.circlepad.value != 0;
+			emu->getServiceManager().getHID().setCirclepadY(message.circlepad.value);
+			break;
+		}
+
 		case MessageType::PressTouchscreen:
 			emu->getServiceManager().getHID().setTouchScreenPress(message.touchscreen.x, message.touchscreen.y);
 			break;
@@ -298,29 +367,21 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
 		sendMessage(message);
 	};
 
-	switch (event->key()) {
-		case Qt::Key_L: pressKey(HID::Keys::A); break;
-		case Qt::Key_K: pressKey(HID::Keys::B); break;
-		case Qt::Key_O: pressKey(HID::Keys::X); break;
-		case Qt::Key_I: pressKey(HID::Keys::Y); break;
+	u32 key = keyboardMappings.getMapping(event->key());
+	if (key != HID::Keys::Null) {
+		switch (key) {
+			case HID::Keys::CirclePadUp: setCirclePad(MessageType::SetCirclePadY, 0x9C); break;
+			case HID::Keys::CirclePadDown: setCirclePad(MessageType::SetCirclePadY, -0x9C); break;
+			case HID::Keys::CirclePadLeft: setCirclePad(MessageType::SetCirclePadX, -0x9C); break;
+			case HID::Keys::CirclePadRight: setCirclePad(MessageType::SetCirclePadX, 0x9C); break;
 
-		case Qt::Key_Q: pressKey(HID::Keys::L); break;
-		case Qt::Key_P: pressKey(HID::Keys::R); break;
-
-		case Qt::Key_W: setCirclePad(MessageType::SetCirclePadY, 0x9C); break;
-		case Qt::Key_A: setCirclePad(MessageType::SetCirclePadX, -0x9C); break;
-		case Qt::Key_S: setCirclePad(MessageType::SetCirclePadY, -0x9C); break;
-		case Qt::Key_D: setCirclePad(MessageType::SetCirclePadX, 0x9C); break;
-
-		case Qt::Key_Right: pressKey(HID::Keys::Right); break;
-		case Qt::Key_Left: pressKey(HID::Keys::Left); break;
-		case Qt::Key_Up: pressKey(HID::Keys::Up); break;
-		case Qt::Key_Down: pressKey(HID::Keys::Down); break;
-
-		case Qt::Key_Return: pressKey(HID::Keys::Start); break;
-		case Qt::Key_Backspace: pressKey(HID::Keys::Select); break;
-		case Qt::Key_F4: sendMessage(EmulatorMessage{.type = MessageType::TogglePause}); break;
-		case Qt::Key_F5: sendMessage(EmulatorMessage{.type = MessageType::Reset}); break;
+			default: pressKey(key); break;
+		}
+	} else {
+		switch (event->key()) {
+			case Qt::Key_F4: sendMessage(EmulatorMessage{.type = MessageType::TogglePause}); break;
+			case Qt::Key_F5: sendMessage(EmulatorMessage{.type = MessageType::Reset}); break;
+		}
 	}
 }
 
@@ -337,28 +398,16 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event) {
 		sendMessage(message);
 	};
 
-	switch (event->key()) {
-		case Qt::Key_L: releaseKey(HID::Keys::A); break;
-		case Qt::Key_K: releaseKey(HID::Keys::B); break;
-		case Qt::Key_O: releaseKey(HID::Keys::X); break;
-		case Qt::Key_I: releaseKey(HID::Keys::Y); break;
+	u32 key = keyboardMappings.getMapping(event->key());
+	if (key != HID::Keys::Null) {
+		switch (key) {
+			case HID::Keys::CirclePadUp: releaseCirclePad(MessageType::SetCirclePadY); break;
+			case HID::Keys::CirclePadDown: releaseCirclePad(MessageType::SetCirclePadY); break;
+			case HID::Keys::CirclePadLeft: releaseCirclePad(MessageType::SetCirclePadX); break;
+			case HID::Keys::CirclePadRight: releaseCirclePad(MessageType::SetCirclePadX); break;
 
-		case Qt::Key_Q: releaseKey(HID::Keys::L); break;
-		case Qt::Key_P: releaseKey(HID::Keys::R); break;
-
-		case Qt::Key_W:
-		case Qt::Key_S: releaseCirclePad(MessageType::SetCirclePadY); break;
-
-		case Qt::Key_A:
-		case Qt::Key_D: releaseCirclePad(MessageType::SetCirclePadX); break;
-
-		case Qt::Key_Right: releaseKey(HID::Keys::Right); break;
-		case Qt::Key_Left: releaseKey(HID::Keys::Left); break;
-		case Qt::Key_Up: releaseKey(HID::Keys::Up); break;
-		case Qt::Key_Down: releaseKey(HID::Keys::Down); break;
-
-		case Qt::Key_Return: releaseKey(HID::Keys::Start); break;
-		case Qt::Key_Backspace: releaseKey(HID::Keys::Select); break;
+			default: releaseKey(key); break;
+		}
 	}
 }
 
@@ -414,4 +463,100 @@ void MainWindow::editCheat(u32 handle, const std::vector<uint8_t>& cheat, const 
 
 	message.cheat.c = c;
 	sendMessage(message);
+}
+
+void MainWindow::initControllers() {
+	// Make SDL use consistent positional button mapping
+	SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
+	if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) < 0) {
+		Helpers::warn("Failed to initialize SDL2 GameController: %s", SDL_GetError());
+		return;
+	}
+
+	if (SDL_WasInit(SDL_INIT_GAMECONTROLLER)) {
+		gameController = SDL_GameControllerOpen(0);
+
+		if (gameController != nullptr) {
+			SDL_Joystick* stick = SDL_GameControllerGetJoystick(gameController);
+			gameControllerID = SDL_JoystickInstanceID(stick);
+		}
+	}
+}
+
+void MainWindow::pollControllers() {
+	// Update circlepad if a controller is plugged in
+	if (gameController != nullptr) {
+		HIDService& hid = emu->getServiceManager().getHID();
+		const s16 stickX = SDL_GameControllerGetAxis(gameController, SDL_CONTROLLER_AXIS_LEFTX);
+		const s16 stickY = SDL_GameControllerGetAxis(gameController, SDL_CONTROLLER_AXIS_LEFTY);
+		constexpr s16 deadzone = 3276;
+		constexpr s16 maxValue = 0x9C;
+		constexpr s16 div = 0x8000 / maxValue;
+
+		// Avoid overriding the keyboard's circlepad input
+		if (std::abs(stickX) < deadzone && !keyboardAnalogX) {
+			hid.setCirclepadX(0);
+		} else {
+			hid.setCirclepadX(stickX / div);
+		}
+
+		if (std::abs(stickY) < deadzone && !keyboardAnalogY) {
+			hid.setCirclepadY(0);
+		} else {
+			hid.setCirclepadY(-(stickY / div));
+		}
+	}
+
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		HIDService& hid = emu->getServiceManager().getHID();
+		using namespace HID;
+
+		switch (event.type) {
+			case SDL_CONTROLLERDEVICEADDED:
+				if (gameController == nullptr) {
+					gameController = SDL_GameControllerOpen(event.cdevice.which);
+					gameControllerID = event.cdevice.which;
+				}
+				break;
+
+			case SDL_CONTROLLERDEVICEREMOVED:
+				if (event.cdevice.which == gameControllerID) {
+					SDL_GameControllerClose(gameController);
+					gameController = nullptr;
+					gameControllerID = 0;
+				}
+				break;
+
+			case SDL_CONTROLLERBUTTONUP:
+			case SDL_CONTROLLERBUTTONDOWN: {
+				if (emu->romType == ROMType::None) break;
+				u32 key = 0;
+
+				switch (event.cbutton.button) {
+					case SDL_CONTROLLER_BUTTON_A: key = Keys::B; break;
+					case SDL_CONTROLLER_BUTTON_B: key = Keys::A; break;
+					case SDL_CONTROLLER_BUTTON_X: key = Keys::Y; break;
+					case SDL_CONTROLLER_BUTTON_Y: key = Keys::X; break;
+					case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: key = Keys::L; break;
+					case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: key = Keys::R; break;
+					case SDL_CONTROLLER_BUTTON_DPAD_LEFT: key = Keys::Left; break;
+					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: key = Keys::Right; break;
+					case SDL_CONTROLLER_BUTTON_DPAD_UP: key = Keys::Up; break;
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN: key = Keys::Down; break;
+					case SDL_CONTROLLER_BUTTON_BACK: key = Keys::Select; break;
+					case SDL_CONTROLLER_BUTTON_START: key = Keys::Start; break;
+				}
+
+				if (key != 0) {
+					if (event.cbutton.state == SDL_PRESSED) {
+						hid.pressKey(key);
+					} else {
+						hid.releaseKey(key);
+					}
+				}
+				break;
+			}
+		}
+	}
 }

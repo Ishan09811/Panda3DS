@@ -19,7 +19,7 @@ build/
 
 .vs/
 .vscode/*.log
-
+.cache/
 ipch/
 *.aps
 *.ncb
@@ -65,3 +65,4 @@ fb.bat
 *.smdh
 
 config.toml
+CMakeSettings.json
