@@ -341,6 +341,8 @@ if(ENABLE_VULKAN)
        list(APPEND Vulkan_FIND_COMPONENTS glslangValidator)
     endif()
 
+    find_package(Vulkan REQUIRED COMPONENTS ${Vulkan_FIND_COMPONENTS})
+
     set(RENDERER_VK_INCLUDE_FILES include/renderer_vk/renderer_vk.hpp
         include/renderer_vk/vk_api.hpp include/renderer_vk/vk_debug.hpp
         include/renderer_vk/vk_descriptor_heap.hpp
