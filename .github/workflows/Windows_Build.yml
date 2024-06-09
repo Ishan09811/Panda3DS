@@ -40,8 +40,10 @@ jobs:
     - name: Verify glslangValidator installation
       shell: pwsh
       run: |
-        if (& "${{github.workspace}}/glslang/bin/glslangValidator.exe" --version) {
+        $glslangValidatorPath = "${{github.workspace}}/glslang/bin/glslangValidator.exe"
+        if (Test-Path $glslangValidatorPath) {
           Write-Output "glslangValidator is installed successfully."
+          & $glslangValidatorPath --version
         } else {
           Write-Error "glslangValidator could not be found."
           exit 1
