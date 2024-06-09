@@ -30,24 +30,9 @@ jobs:
         vulkan-use-cache: true
         vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Tools, Glslang
 
-    - name: Download and install glslangValidator
+    - name: Setup glslang
       run: |
-        curl -L -o glslang.zip https://github.com/KhronosGroup/glslang/releases/download/master-tot/glslang-master-windows-x64-Release.zip
-        mkdir glslang
-        tar -xf glslang.zip -C glslang --strip-components=1
-        echo "${{github.workspace}}/glslang/bin" >> $GITHUB_PATH
-
-    - name: Verify glslangValidator installation
-      shell: pwsh
-      run: |
-        $glslangValidatorPath = "${{github.workspace}}/glslang/bin/glslangValidator.exe"
-        if (Test-Path $glslangValidatorPath) {
-          Write-Output "glslangValidator is installed successfully."
-          & $glslangValidatorPath --version
-        } else {
-          Write-Error "glslangValidator could not be found."
-          exit 1
-        }
+        bash setup-glslang.sh
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
