@@ -38,8 +38,9 @@ jobs:
         echo "${{github.workspace}}/glslang/bin" >> $GITHUB_PATH
 
     - name: Verify glslangValidator installation
+      shell: pwsh
       run: |
-        if (glslang\\bin\\glslangValidator.exe --version) {
+        if (& glslang\\bin\\glslangValidator.exe --version) {
           Write-Output "glslangValidator is installed successfully."
         } else {
           Write-Error "glslangValidator could not be found."
