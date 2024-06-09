@@ -337,11 +337,18 @@ if(ENABLE_OPENGL)
 endif()
 
 if(ENABLE_VULKAN)
-    if(NOT glslangValidator IN_LIST Vulkan_FIND_COMPONENTS)
+    if(NOT "glslangValidator" IN_LIST Vulkan_FIND_COMPONENTS)
        list(APPEND Vulkan_FIND_COMPONENTS glslangValidator)
     endif()
 
     find_package(Vulkan REQUIRED COMPONENTS ${Vulkan_FIND_COMPONENTS})
+
+    if (NOT TARGET glslangValidator)
+        add_executable(glslangValidator IMPORTED)
+        set_target_properties(glslangValidator PROPERTIES
+            IMPORTED_LOCATION "${VULKAN_SDK}/bin/glslangValidator.exe"
+        )
+    endif()
 
     set(RENDERER_VK_INCLUDE_FILES include/renderer_vk/renderer_vk.hpp
         include/renderer_vk/vk_api.hpp include/renderer_vk/vk_debug.hpp
