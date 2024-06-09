@@ -338,8 +338,8 @@ endif()
 
 if(ENABLE_VULKAN)
     find_package(
-        Vulkan 1.3.206 REQUIRED
-        COMPONENTS glslangValidator
+        Vulkan REQUIRED
+        COMPONENTS Vulkan::glslangValidator
     )
 
     set(RENDERER_VK_INCLUDE_FILES include/renderer_vk/renderer_vk.hpp
