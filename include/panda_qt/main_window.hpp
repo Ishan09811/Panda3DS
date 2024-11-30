@@ -19,6 +19,7 @@
 #include "panda_qt/config_window.hpp"
 #include "panda_qt/patch_window.hpp"
 #include "panda_qt/screen.hpp"
+#include "panda_qt/shader_editor.hpp"
 #include "panda_qt/text_editor.hpp"
 #include "services/hid.hpp"
 
@@ -48,6 +49,8 @@ class MainWindow : public QMainWindow {
 		EditCheat,
 		PressTouchscreen,
 		ReleaseTouchscreen,
+		ReloadUbershader,
+		SetScreenSize,
 	};
 
 	// Tagged union representing our message queue messages
@@ -79,6 +82,11 @@ class MainWindow : public QMainWindow {
 				u16 x;
 				u16 y;
 			} touchscreen;
+
+			struct {
+				u32 width;
+				u32 height;
+			} screenSize;
 		};
 	};
 
@@ -93,12 +101,13 @@ class MainWindow : public QMainWindow {
 
 	QMenuBar* menuBar = nullptr;
 	InputMappings keyboardMappings;
-	ScreenWidget screen;
+	ScreenWidget* screen;
 	AboutWindow* aboutWindow;
 	ConfigWindow* configWindow;
 	CheatsWindow* cheatsEditor;
 	TextEditorWindow* luaEditor;
 	PatchWindow* patchWindow;
+	ShaderEditorWindow* shaderEditor;
 
 	// We use SDL's game controller API since it's the sanest API that supports as many controllers as possible
 	SDL_GameController* gameController = nullptr;
@@ -110,18 +119,17 @@ class MainWindow : public QMainWindow {
 	void selectROM();
 	void dumpDspFirmware();
 	void dumpRomFS();
-	void openLuaEditor();
-	void openCheatsEditor();
-	void openPatchWindow();
 	void showAboutMenu();
 	void initControllers();
 	void pollControllers();
+	void setupControllerSensors(SDL_GameController* controller);
 	void sendMessage(const EmulatorMessage& message);
 	void dispatchMessage(const EmulatorMessage& message);
 
 	// Tracks whether we are using an OpenGL-backed renderer or a Vulkan-backed renderer
 	bool usingGL = false;
 	bool usingVk = false;
+	bool usingMtl = false;
 
 	// Variables to keep track of whether the user is controlling the 3DS analog stick with their keyboard
 	// This is done so when a gamepad is connected, we won't automatically override the 3DS analog stick settings with the gamepad's state
@@ -133,11 +141,15 @@ class MainWindow : public QMainWindow {
 	MainWindow(QApplication* app, QWidget* parent = nullptr);
 	~MainWindow();
 
+	void closeEvent(QCloseEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void keyReleaseEvent(QKeyEvent* event) override;
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 
 	void loadLuaScript(const std::string& code);
+	void reloadShader(const std::string& shader);
 	void editCheat(u32 handle, const std::vector<uint8_t>& cheat, const std::function<void(u32)>& callback);
+
+	void handleScreenResize(u32 width, u32 height);
 };

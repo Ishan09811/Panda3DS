@@ -41,6 +41,23 @@ void EmulatorConfig::load() {
 			discordRpcEnabled = toml::find_or<toml::boolean>(general, "EnableDiscordRPC", false);
 			usePortableBuild = toml::find_or<toml::boolean>(general, "UsePortableBuild", false);
 			defaultRomPath = toml::find_or<std::string>(general, "DefaultRomPath", "");
+
+			printAppVersion = toml::find_or<toml::boolean>(general, "PrintAppVersion", true);
+		}
+	}
+
+	if (data.contains("Window")) {
+		auto windowResult = toml::expect<toml::value>(data.at("Window"));
+		if (windowResult.is_ok()) {
+			auto window = windowResult.unwrap();
+
+			windowSettings.showAppVersion = toml::find_or<toml::boolean>(window, "AppVersionOnWindow", false);
+			windowSettings.rememberPosition = toml::find_or<toml::boolean>(window, "RememberWindowPosition", false);
+
+			windowSettings.x = toml::find_or<toml::integer>(window, "WindowPosX", WindowSettings::defaultX);
+			windowSettings.y = toml::find_or<toml::integer>(window, "WindowPosY", WindowSettings::defaultY);
+			windowSettings.width = toml::find_or<toml::integer>(window, "WindowWidth", WindowSettings::defaultWidth);
+			windowSettings.height = toml::find_or<toml::integer>(window, "WindowHeight", WindowSettings::defaultHeight);
 		}
 	}
 
@@ -62,6 +79,13 @@ void EmulatorConfig::load() {
 
 			shaderJitEnabled = toml::find_or<toml::boolean>(gpu, "EnableShaderJIT", shaderJitDefault);
 			vsyncEnabled = toml::find_or<toml::boolean>(gpu, "EnableVSync", true);
+			useUbershaders = toml::find_or<toml::boolean>(gpu, "UseUbershaders", ubershaderDefault);
+			accurateShaderMul = toml::find_or<toml::boolean>(gpu, "AccurateShaderMultiplication", false);
+			accelerateShaders = toml::find_or<toml::boolean>(gpu, "AccelerateShaders", accelerateShadersDefault);
+
+			forceShadergenForLights = toml::find_or<toml::boolean>(gpu, "ForceShadergenForLighting", true);
+			lightShadergenThreshold = toml::find_or<toml::integer>(gpu, "ShadergenLightThreshold", 1);
+			enableRenderdoc = toml::find_or<toml::boolean>(gpu, "EnableRenderdoc", false);
 		}
 	}
 
@@ -70,9 +94,16 @@ void EmulatorConfig::load() {
 		if (audioResult.is_ok()) {
 			auto audio = audioResult.unwrap();
 
-			auto dspCoreName = toml::find_or<std::string>(audio, "DSPEmulation", "Null");
+			auto dspCoreName = toml::find_or<std::string>(audio, "DSPEmulation", "HLE");
 			dspType = Audio::DSPCore::typeFromString(dspCoreName);
+			
 			audioEnabled = toml::find_or<toml::boolean>(audio, "EnableAudio", false);
+			aacEnabled = toml::find_or<toml::boolean>(audio, "EnableAACAudio", true);
+
+			audioDeviceConfig.muteAudio = toml::find_or<toml::boolean>(audio, "MuteAudio", false);
+			// Our volume ranges from 0.0 (muted) to 2.0 (boosted, using a logarithmic scale). 1.0 is the "default" volume, ie we don't adjust the PCM
+			// samples at all.
+			audioDeviceConfig.volumeRaw = float(std::clamp(toml::find_or<toml::floating>(audio, "AudioVolume", 1.0), 0.0, 2.0));
 		}
 	}
 
@@ -122,11 +153,30 @@ void EmulatorConfig::save() {
 	data["General"]["EnableDiscordRPC"] = discordRpcEnabled;
 	data["General"]["UsePortableBuild"] = usePortableBuild;
 	data["General"]["DefaultRomPath"] = defaultRomPath.string();
+	data["General"]["PrintAppVersion"] = printAppVersion;
+
+	data["Window"]["AppVersionOnWindow"] = windowSettings.showAppVersion;
+	data["Window"]["RememberWindowPosition"] = windowSettings.rememberPosition;
+	data["Window"]["WindowPosX"] = windowSettings.x;
+	data["Window"]["WindowPosY"] = windowSettings.y;
+	data["Window"]["WindowWidth"] = windowSettings.width;
+	data["Window"]["WindowHeight"] = windowSettings.height;
+	
 	data["GPU"]["EnableShaderJIT"] = shaderJitEnabled;
 	data["GPU"]["Renderer"] = std::string(Renderer::typeToString(rendererType));
 	data["GPU"]["EnableVSync"] = vsyncEnabled;
+	data["GPU"]["AccurateShaderMultiplication"] = accurateShaderMul;
+	data["GPU"]["UseUbershaders"] = useUbershaders;
+	data["GPU"]["ForceShadergenForLighting"] = forceShadergenForLights;
+	data["GPU"]["ShadergenLightThreshold"] = lightShadergenThreshold;
+	data["GPU"]["AccelerateShaders"] = accelerateShaders;
+	data["GPU"]["EnableRenderdoc"] = enableRenderdoc;
+
 	data["Audio"]["DSPEmulation"] = std::string(Audio::DSPCore::typeToString(dspType));
 	data["Audio"]["EnableAudio"] = audioEnabled;
+	data["Audio"]["EnableAACAudio"] = aacEnabled;
+	data["Audio"]["MuteAudio"] = audioDeviceConfig.muteAudio;
+	data["Audio"]["AudioVolume"] = double(audioDeviceConfig.volumeRaw);
 
 	data["Battery"]["ChargerPlugged"] = chargerPlugged;
 	data["Battery"]["BatteryPercentage"] = batteryPercentage;
