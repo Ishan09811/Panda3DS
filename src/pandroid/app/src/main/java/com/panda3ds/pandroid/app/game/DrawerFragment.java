@@ -20,7 +20,7 @@ import com.google.android.material.color.MaterialColors;
 import android.content.pm.ActivityInfo;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.card.MaterialCardView
+import com.google.android.material.card.MaterialCardView;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
