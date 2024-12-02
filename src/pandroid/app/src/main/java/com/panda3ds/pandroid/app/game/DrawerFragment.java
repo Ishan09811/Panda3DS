@@ -20,6 +20,7 @@ import com.google.android.material.color.MaterialColors;
 import android.content.pm.ActivityInfo;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.card.MaterialCardView
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
@@ -63,11 +64,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
                     if (palette != null) {
-                        int fallbackColor = ((ColorDrawable) drawarLayout.findViewById(R.id.background_card).getBackground()).getColor();
+                        int fallbackColor = ((ColorDrawable) drawarLayout.findViewById(R.id.card_background).getBackground()).getColor();
                         int dominantColor = palette.getDominantColor(
                             fallbackColor // Fallback color
                         );
-                        ((MaterialCardView) drawerLayout.findViewById(R.id.background_card)).setBackgroundColor(dominantColor);   
+                        ((MaterialCardView) drawerLayout.findViewById(R.id.card_background)).setBackgroundColor(dominantColor);   
                     }
                 }
             });      
