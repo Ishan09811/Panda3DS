@@ -14,9 +14,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.palette.graphics.Palette;
+import android.graphics.drawable.ColorDrawable;
+import com.google.android.material.color.MaterialColors;
 import android.content.pm.ActivityInfo;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.card.MaterialCardView;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
@@ -56,6 +60,18 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         game = GameUtils.getCurrentGame();
         if (game.getIcon() != null && !game.getIcon().isRecycled()) {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
+            Palette.from(game.getIcon()).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(@Nullable Palette palette) {
+                    if (palette != null) {
+                        int fallbackColor = ((ColorDrawable) drawerLayout.findViewById(R.id.card_background).getBackground()).getColor();
+                        int dominantColor = palette.getDominantColor(
+                            fallbackColor // Fallback color
+                        );
+                        ((MaterialCardView) drawerLayout.findViewById(R.id.card_background)).setBackgroundColor(dominantColor);   
+                    }
+                }
+            });      
         } else {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
