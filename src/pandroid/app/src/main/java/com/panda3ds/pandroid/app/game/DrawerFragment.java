@@ -64,7 +64,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
                     if (palette != null) {
-                        int fallbackColor = ((ColorDrawable) drawarLayout.findViewById(R.id.card_background).getBackground()).getColor();
+                        int fallbackColor = ((ColorDrawable) drawerLayout.findViewById(R.id.card_background).getBackground()).getColor();
                         int dominantColor = palette.getDominantColor(
                             fallbackColor // Fallback color
                         );
