@@ -25,6 +25,7 @@
             android:background="?colorSurfaceVariant">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_background"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 app:cardCornerRadius="10dp"
