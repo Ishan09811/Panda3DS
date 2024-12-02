@@ -67,7 +67,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                         int dominantColor = palette.getDominantColor(
                             fallbackColor // Fallback color
                         );
-                        ((MaterialCardView) drawerLayout.findViewById(R.id.background_card).setBackgroundColor(dominantColor));   
+                        ((MaterialCardView) drawerLayout.findViewById(R.id.background_card)).setBackgroundColor(dominantColor);   
                     }
                 }
             });      
