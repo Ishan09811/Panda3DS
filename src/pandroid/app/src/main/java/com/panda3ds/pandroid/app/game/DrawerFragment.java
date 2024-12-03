@@ -69,7 +69,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                             fallbackColor // Fallback color
                         );
                         if (dominantColor != Color.parseColor("#000000")) {
-                            ((MaterialCardView) drawerLayout.findViewById(R.id.card_background)).setBackgroundColor(dominantColor);   
+                            ((MaterialCardView) drawerLayout.findViewById(R.id.card_background)).setCardBackgroundColor(dominantColor);   
                         }
                     }
                 }
