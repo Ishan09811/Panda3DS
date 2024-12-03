@@ -60,7 +60,12 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         game = GameUtils.getCurrentGame();
         if (game.getIcon() != null && !game.getIcon().isRecycled()) {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
-            Palette.from(game.getIcon()).generate(new Palette.PaletteAsyncListener() {
+            Bitmap bitmap = game.getIcon();
+            if (game.getIcon().getConfig() == Bitmap.Config.HARDWARE) {
+                // Convert hardware bitmap to software bitmap
+                bitmap = game.getIcon().copy(Bitmap.Config.ARGB_8888, false);
+            }
+            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
                     if (palette != null) {
