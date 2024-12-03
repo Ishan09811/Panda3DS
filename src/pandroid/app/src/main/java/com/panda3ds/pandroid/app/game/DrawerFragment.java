@@ -15,6 +15,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.palette.graphics.Palette;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import com.google.android.material.color.MaterialColors;
 import android.content.pm.ActivityInfo;
@@ -60,11 +61,8 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         game = GameUtils.getCurrentGame();
         if (game.getIcon() != null && !game.getIcon().isRecycled()) {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
-            Bitmap bitmap = game.getIcon();
-            if (game.getIcon().getConfig() == Bitmap.Config.HARDWARE) {
-                // Convert hardware bitmap to software bitmap
-                bitmap = game.getIcon().copy(Bitmap.Config.ARGB_8888, false);
-            }
+            // Convert hardware bitmap to software bitmap
+            Bitmap bitmap = game.getIcon().copy(Bitmap.Config.ARGB_8888, false);
             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
