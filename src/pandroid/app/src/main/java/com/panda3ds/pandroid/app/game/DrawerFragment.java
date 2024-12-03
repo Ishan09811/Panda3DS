@@ -64,7 +64,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
                     if (palette != null) {
-                        int fallbackColor = Color.parseColor("#000000")
+                        int fallbackColor = Color.parseColor("#000000");
                         int dominantColor = palette.getDominantColor(
                             fallbackColor // Fallback color
                         );
