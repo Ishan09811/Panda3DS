@@ -99,6 +99,7 @@ void EmulatorConfig::load() {
 			
 			audioEnabled = toml::find_or<toml::boolean>(audio, "EnableAudio", false);
 			aacEnabled = toml::find_or<toml::boolean>(audio, "EnableAACAudio", true);
+			printDSPFirmware = toml::find_or<toml::boolean>(audio, "PrintDSPFirmware", false);
 
 			audioDeviceConfig.muteAudio = toml::find_or<toml::boolean>(audio, "MuteAudio", false);
 			// Our volume ranges from 0.0 (muted) to 2.0 (boosted, using a logarithmic scale). 1.0 is the "default" volume, ie we don't adjust the PCM
@@ -127,6 +128,16 @@ void EmulatorConfig::load() {
 
 			sdCardInserted = toml::find_or<toml::boolean>(sd, "UseVirtualSD", true);
 			sdWriteProtected = toml::find_or<toml::boolean>(sd, "WriteProtectVirtualSD", false);
+		}
+	}
+
+	if (data.contains("UI")) {
+		auto uiResult = toml::expect<toml::value>(data.at("UI"));
+		if (uiResult.is_ok()) {
+			auto ui = uiResult.unwrap();
+
+			frontendSettings.theme = FrontendSettings::themeFromString(toml::find_or<std::string>(ui, "Theme", "dark"));
+			frontendSettings.icon = FrontendSettings::iconFromString(toml::find_or<std::string>(ui, "WindowIcon", "rpog"));
 		}
 	}
 }
@@ -177,12 +188,16 @@ void EmulatorConfig::save() {
 	data["Audio"]["EnableAACAudio"] = aacEnabled;
 	data["Audio"]["MuteAudio"] = audioDeviceConfig.muteAudio;
 	data["Audio"]["AudioVolume"] = double(audioDeviceConfig.volumeRaw);
+	data["Audio"]["PrintDSPFirmware"] = printDSPFirmware;
 
 	data["Battery"]["ChargerPlugged"] = chargerPlugged;
 	data["Battery"]["BatteryPercentage"] = batteryPercentage;
 
 	data["SD"]["UseVirtualSD"] = sdCardInserted;
 	data["SD"]["WriteProtectVirtualSD"] = sdWriteProtected;
+
+	data["UI"]["Theme"] = std::string(FrontendSettings::themeToString(frontendSettings.theme));
+	data["UI"]["WindowIcon"] = std::string(FrontendSettings::iconToString(frontendSettings.icon));
 
 	std::ofstream file(path, std::ios::out);
 	file << data;

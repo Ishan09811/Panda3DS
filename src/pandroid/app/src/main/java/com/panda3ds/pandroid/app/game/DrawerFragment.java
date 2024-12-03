@@ -14,9 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.palette.graphics.Palette;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import com.google.android.material.color.MaterialColors;
 import android.content.pm.ActivityInfo;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.card.MaterialCardView;
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
 import com.panda3ds.pandroid.data.game.GameMetadata;
@@ -56,6 +61,22 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         game = GameUtils.getCurrentGame();
         if (game.getIcon() != null && !game.getIcon().isRecycled()) {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
+            // Convert hardware bitmap to software bitmap
+            Bitmap bitmap = game.getIcon().copy(Bitmap.Config.ARGB_8888, false);
+            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(@Nullable Palette palette) {
+                    if (palette != null) {
+                        int fallbackColor = Color.parseColor("#000000");
+                        int dominantColor = palette.getDominantColor(
+                            fallbackColor // Fallback color
+                        );
+                        if (dominantColor != Color.parseColor("#000000")) {
+                            ((MaterialCardView) drawerLayout.findViewById(R.id.card_background)).setCardBackgroundColor(dominantColor);   
+                        }
+                    }
+                }
+            });      
         } else {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
