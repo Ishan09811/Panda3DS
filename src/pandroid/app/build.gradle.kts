@@ -52,5 +52,7 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.preference:preference:1.2.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.navigation:navigation-fragment:2.8.4")
+    implementation("androidx.navigation:navigation-ui:2.8.4")
     implementation("com.google.code.gson:gson:2.10.1")
 }
