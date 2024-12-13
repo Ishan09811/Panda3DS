@@ -20,7 +20,7 @@ public class MainActivity extends BaseActivity implements NavigationBarView.OnIt
 	setContentView(R.layout.activity_main);
 
 	NavigationBarView navigationBar = findViewById(R.id.navigation);
-        NavHostFragment navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        NavHostFragment navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container);
         navigationBar.setupWithNavController(navHostFragment.navController);
     }
 }
