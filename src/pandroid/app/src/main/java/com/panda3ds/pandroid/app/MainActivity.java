@@ -4,23 +4,24 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.ui.setupWithNavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationBarView;
 import com.panda3ds.pandroid.R;
 
-public class MainActivity extends BaseActivity implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_main);
-
-	NavigationBarView navigationBar = findViewById(R.id.navigation);
-        NavHostFragment navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container);
-        navigationBar.setupWithNavController(navHostFragment.navController);
+        setContentView(R.layout.activity_main);
+        NavigationBarView navigationBar = findViewById(R.id.navigation);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            NavigationUI.setupWithNavController(navigationBar, navController);
+        }
     }
 }
