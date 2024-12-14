@@ -11,8 +11,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationBarView;
 import com.panda3ds.pandroid.R;
+import com.panda3ds.pandroid.app.BaseActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +23,22 @@ public class MainActivity extends AppCompatActivity {
         if (navHostFragment != null) {
             NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(navigationBar, navController);
-        }
+            navigationBar.setOnItemReselectedListener(new NavigationBarView.OnItemReselectedListener() {
+                @Override
+                public void onNavigationItemReselected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.gamesFragment:
+                            navController.navigate(R.id.gamesFragment);
+                            break;
+                        case R.id.searchFragment:
+                            navController.navigate(R.id.searchFragment);
+                            break;
+                        case R.id.settingsFragment:
+                            navController.navigate(R.id.settingsFragment);
+                            break;
+                    }
+                }
+            });
+        }   
     }
 }
