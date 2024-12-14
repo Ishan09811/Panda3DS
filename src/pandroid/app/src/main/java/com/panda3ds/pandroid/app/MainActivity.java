@@ -26,17 +26,14 @@ public class MainActivity extends BaseActivity {
             navigationBar.setOnItemReselectedListener(new NavigationBarView.OnItemReselectedListener() {
                 @Override
                 public void onNavigationItemReselected(@NonNull MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.games:
-                            navController.navigate(R.id.gamesFragment);
-                            break;
-                        case R.id.search:
-                            navController.navigate(R.id.searchFragment);
-                            break;
-                        case R.id.settings:
-                            navController.navigate(R.id.settingsFragment);
-                            break;
-                    }
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.games) {
+                        navController.navigate(R.id.gamesFragment);
+                    } else if (itemId == R.id.search) {
+                        navController.navigate(R.id.searchFragment);
+                    } else if (itemId == R.id.settings) {
+                        navController.navigate(R.id.homeSettingsFragment);
+                    }       
                 }
             });
         }   
