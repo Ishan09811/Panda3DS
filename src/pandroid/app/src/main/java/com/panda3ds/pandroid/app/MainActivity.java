@@ -27,13 +27,13 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onNavigationItemReselected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
-                        case R.id.gamesFragment:
+                        case R.id.games:
                             navController.navigate(R.id.gamesFragment);
                             break;
-                        case R.id.searchFragment:
+                        case R.id.search:
                             navController.navigate(R.id.searchFragment);
                             break;
-                        case R.id.settingsFragment:
+                        case R.id.settings:
                             navController.navigate(R.id.settingsFragment);
                             break;
                     }
