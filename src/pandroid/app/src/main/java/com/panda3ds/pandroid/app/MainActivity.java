@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
                     } else if (itemId == R.id.search) {
                         navController.navigate(R.id.searchFragment);
                     } else if (itemId == R.id.settings) {
-                        navController.navigate(R.id.homeSettingsFragment);
+                        navController.navigate(R.id.settingsFragment);
                     }       
                 }
             });
