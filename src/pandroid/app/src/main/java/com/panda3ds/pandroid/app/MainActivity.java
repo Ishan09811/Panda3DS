@@ -12,7 +12,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationBarView;
 import com.panda3ds.pandroid.R;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
