@@ -20,22 +20,20 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         NavigationBarView navigationBar = findViewById(R.id.navigation);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (navHostFragment != null) {
-            NavController navController = navHostFragment.getNavController();
-            NavigationUI.setupWithNavController(navigationBar, navController);
-            navigationBar.setOnItemReselectedListener(new NavigationBarView.OnItemReselectedListener() {
-                @Override
-                public void onNavigationItemReselected(@NonNull MenuItem item) {
-                    int itemId = item.getItemId();
-                    if (itemId == R.id.games) {
-                        navController.navigate(R.id.gamesFragment);
-                    } else if (itemId == R.id.search) {
-                        navController.navigate(R.id.searchFragment);
-                    } else if (itemId == R.id.settings) {
-                        navController.navigate(R.id.settingsFragment);
-                    }       
-                }
-            });
-        }   
+        NavController navController = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(navigationBar, navController);
+        navigationBar.setOnItemReselectedListener(new NavigationBarView.OnItemReselectedListener() {
+            @Override
+            public void onNavigationItemReselected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.games) {
+                    navController.navigate(R.id.gamesFragment);
+                } else if (itemId == R.id.search) {
+                    navController.navigate(R.id.searchFragment);
+                } else if (itemId == R.id.settings) {
+                    navController.navigate(R.id.settingsFragment);
+                }       
+            }
+        });   
     }
 }
