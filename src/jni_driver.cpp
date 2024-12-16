@@ -107,6 +107,12 @@ AlberFunction(jboolean, LoadRom)(JNIEnv* env, jobject obj, jstring path) {
 	return romLoaded;
 }
 
+AlberFunction(void, LoadAmiibo)(JNIEnv* env, jobject obj, jstring path) {
+	const char* pathStr = env->GetStringUTFChars(path, nullptr);
+	emulator->loadAmiibo(pathStr);
+	env->ReleaseStringUTFChars(path, pathStr);
+}
+
 AlberFunction(void, LoadLuaScript)(JNIEnv* env, jobject obj, jstring script) {
 	const char* scriptStr = env->GetStringUTFChars(script, nullptr);
 	emulator->getLua().loadString(scriptStr);
