@@ -14,7 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import android.content.pm.ActivityInfo;
+import android.content.Intent;
+import android.net.Uri;
 
 import com.google.android.material.navigation.NavigationView;
 import com.panda3ds.pandroid.AlberDriver;
@@ -24,6 +29,8 @@ import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
 
 public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener {
+    private final ActivityResultContracts.OpenDocument openAmiiboFile = new ActivityResultContracts.OpenDocument();
+	private ActivityResultLauncher<String[]> pickFileRequest;
     private DrawerLayout drawerContainer;
     private View drawerLayout;
     private EmulatorCallback emulator;
@@ -48,6 +55,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         drawerContainer.setVisibility(View.GONE);
         drawerLayout = view.findViewById(R.id.drawer_layout);
 
+        pickFileRequest = registerForActivityResult(
+                openAmiiboFile,
+                this::amiiboResult
+        );
+
         ((NavigationView)view.findViewById(R.id.menu)).setNavigationItemSelectedListener(this);
         refresh();
     }
@@ -65,6 +77,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
 
     @Override
     public void onDetach() {
+        if (pickFileRequest != null) {
+			pickFileRequest.unregister();
+			pickFileRequest = null;
+        }
+        
         if (drawerContainer != null) {
             drawerContainer.removeDrawerListener(this);
         }
@@ -126,6 +143,8 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         } else if (id == R.id.change_orientation) {
             boolean isLandscape = getResources().getDisplayMetrics().widthPixels > getResources().getDisplayMetrics().heightPixels;
             requireActivity().setRequestedOrientation(isLandscape ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else if (id == R.id.load_amiibo) {
+            pickFileRequest.launch(new String[] {"*/*"});
         }
 
         return false;
@@ -133,5 +152,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
 
     public boolean isOpened() {
         return drawerContainer.isOpen();
+    }
+
+    private void amiiboResult(Uri path) {
+        if (path != null) {
+            AlberDriver.LoadAmiibo(path.toString());
+        }
     }
 }
