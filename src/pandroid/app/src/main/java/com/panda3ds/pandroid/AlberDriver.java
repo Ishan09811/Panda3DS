@@ -30,6 +30,7 @@ public class AlberDriver {
 	public static native void Pause();
 	public static native void Resume();
 	public static native void LoadLuaScript(String script);
+	public static native void LoadAmiibo(String path);
 	public static native byte[] GetSmdh();
 
 	public static native void setShaderJitEnabled(boolean enable);
