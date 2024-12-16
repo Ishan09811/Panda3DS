@@ -18,6 +18,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import android.content.pm.ActivityInfo;
+import android.content.Intent;
+import android.net.Uri;
 
 import com.google.android.material.navigation.NavigationView;
 import com.panda3ds.pandroid.AlberDriver;
