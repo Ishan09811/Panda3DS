@@ -144,7 +144,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
             boolean isLandscape = getResources().getDisplayMetrics().widthPixels > getResources().getDisplayMetrics().heightPixels;
             requireActivity().setRequestedOrientation(isLandscape ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else if (id == R.id.load_amiibo) {
-            openFilePicker();
+            pickFileRequest.launch(new String[] {"*/*"});
         }
 
         return false;
@@ -152,14 +152,6 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
 
     public boolean isOpened() {
         return drawerContainer.isOpen();
-    }
-
-    private void openFilePicker() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/octet-stream", "application/nfc"});
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        openFileLauncher.launch(intent);
     }
 
     private void amiiboResult(Uri path) {
