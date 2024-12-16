@@ -36,7 +36,7 @@
             <item
                 android:id="@+id/load_amiibo"
                 android:icon="@drawable/ic_amiibo"
-                android:title="@string/load_amiibo"
+                android:title="@string/load_amiibo" />
         </menu>
     </item>
 </menu>
