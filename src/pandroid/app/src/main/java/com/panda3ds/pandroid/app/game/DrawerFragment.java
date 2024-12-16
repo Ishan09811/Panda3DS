@@ -29,7 +29,8 @@ import com.panda3ds.pandroid.utils.GameUtils;
 import com.panda3ds.pandroid.view.gamesgrid.GameIconView;
 
 public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener {
-    private ActivityResultLauncher<Intent> openFileLauncher;
+    private final ActivityResultContracts.OpenDocument openAmiiboFile = new ActivityResultContracts.OpenDocument();
+	private ActivityResultLauncher<String[]> pickFileRequest;
     private DrawerLayout drawerContainer;
     private View drawerLayout;
     private EmulatorCallback emulator;
@@ -54,9 +55,9 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         drawerContainer.setVisibility(View.GONE);
         drawerLayout = view.findViewById(R.id.drawer_layout);
 
-        openFileLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                this::loadAmiibo
+        pickFileRequest = registerForActivityResult(
+                openAmiiboFile,
+                this::amiiboResult
         );
 
         ((NavigationView)view.findViewById(R.id.menu)).setNavigationItemSelectedListener(this);
@@ -76,6 +77,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
 
     @Override
     public void onDetach() {
+        if (pickFileRequest != null) {
+			pickFileRequest.unregister();
+			pickFileRequest = null;
+        }
+        
         if (drawerContainer != null) {
             drawerContainer.removeDrawerListener(this);
         }
@@ -156,10 +162,9 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         openFileLauncher.launch(intent);
     }
 
-    private void loadAmiibo(Intent resultIntent) {
-        if (resultIntent != null) {
-            Uri uri = resultIntent.getData();
-            AlberDriver.LoadAmiibo(uri.toString());
+    private void amiiboResult(Uri path) {
+        if (path != null) {
+            AlberDriver.LoadAmiibo(path.toString());
         }
     }
 }
