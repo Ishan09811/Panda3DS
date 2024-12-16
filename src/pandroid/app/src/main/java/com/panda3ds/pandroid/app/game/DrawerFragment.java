@@ -136,7 +136,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
             boolean isLandscape = getResources().getDisplayMetrics().widthPixels > getResources().getDisplayMetrics().heightPixels;
             requireActivity().setRequestedOrientation(isLandscape ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else if (id == R.id.load_amiibo) {
-            openFilePicker()
+            openFilePicker();
         }
 
         return false;
