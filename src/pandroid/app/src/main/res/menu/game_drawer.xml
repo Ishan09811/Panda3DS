@@ -33,6 +33,10 @@
                 android:id="@+id/lua_script"
                 android:icon="@drawable/ic_code"
                 android:title="@string/lua_script" />
+            <item
+                android:id="@+id/load_amiibo"
+                android:icon="@drawable/ic_amiibo"
+                android:title="@string/load_amiibo"
         </menu>
     </item>
 </menu>
