@@ -52,7 +52,6 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         drawerLayout = view.findViewById(R.id.drawer_layout);
 
         ((NavigationView)view.findViewById(R.id.menu)).setNavigationItemSelectedListener(this);
-        setInsets(view);
         refresh();
     }
 
@@ -65,29 +64,6 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         }
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_title)).setText(game.getTitle());
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_publisher)).setText(game.getPublisher());
-        setInsets(drawerLayout);
-    }
-
-    private void setInsets(@NonNull View drawerLayout) {
-        ViewCompat.setOnApplyWindowInsetsListener(
-            drawerLayout,
-            new androidx.core.view.OnApplyWindowInsetsListener() {
-                @Override
-                public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
-                    Insets cutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
-                    int left = 0;
-                    int right = 0;
-                    if (ViewCompat.getLayoutDirection(view) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-                        left = cutInsets.left;
-                    } else {
-                        right = cutInsets.right;
-                    }
-
-                    view.setPadding(left, cutInsets.top, right, 0);
-                    return windowInsets;
-                }
-            }
-        );
     }
 
     @Override
