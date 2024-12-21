@@ -89,6 +89,11 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         );
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setInsets(((NavigationView)drawerLayout.findViewById(R.id.menu)));
+    }
 
     @Override
     public void onDetach() {
