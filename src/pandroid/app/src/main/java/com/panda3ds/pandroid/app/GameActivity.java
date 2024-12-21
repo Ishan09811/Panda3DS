@@ -104,7 +104,7 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 		}
 		swapScreens(GlobalConfig.get(GlobalConfig.KEY_CURRENT_DS_LAYOUT));
 		registerSensors();
-		setInsets(findViewById(R.id.drawer_container));
+		setInsets(findViewById(R.id.drawer_fragment));
 	}
 
 	private void setInsets(View drawerLayout) {
