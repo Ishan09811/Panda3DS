@@ -56,7 +56,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         refresh();
     }
 
-    private void refresh() {
+    public void refresh() {
         game = GameUtils.getCurrentGame();
         if (game.getIcon() != null && !game.getIcon().isRecycled()) {
             ((GameIconView) drawerLayout.findViewById(R.id.game_icon)).setImageBitmap(game.getIcon());
@@ -65,9 +65,10 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         }
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_title)).setText(game.getTitle());
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_publisher)).setText(game.getPublisher());
+        setInsets(((NavigationView)drawerLayout.findViewById(R.id.menu)));
     }
 
-    private void setInsets(NavigationView navigationView) {
+    private void setInsets(@NonNull NavigationView navigationView) {
         ViewCompat.setOnApplyWindowInsetsListener(
             navigationView,
             new androidx.core.view.OnApplyWindowInsetsListener() {
@@ -87,12 +88,6 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                 }
             }
         );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setInsets(((NavigationView)drawerLayout.findViewById(R.id.menu)));
     }
 
     @Override
