@@ -104,6 +104,29 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 		}
 		swapScreens(GlobalConfig.get(GlobalConfig.KEY_CURRENT_DS_LAYOUT));
 		registerSensors();
+		setInsets(findViewById(R.id.drawer_container));
+	}
+
+	private void setInsets(@NonNull View drawerLayout) {
+            ViewCompat.setOnApplyWindowInsetsListener(
+                drawerLayout,
+                new androidx.core.view.OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
+                        Insets cutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+                        int left = 0;
+                        int right = 0;
+                        if (ViewCompat.getLayoutDirection(view) == ViewCompat.LAYOUT_DIRECTION_LTR) {
+                            left = cutInsets.left;
+                        } else {
+                            right = cutInsets.right;
+                        }
+
+                        view.setPadding(left, cutInsets.top, right, 0);
+                        return windowInsets;
+                    }
+                }
+            );
 	}
 
 	private void registerSensors() {
@@ -136,10 +159,7 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 	    InputHandler.setEventListener(inputListener);
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
 	        getTheme().applyStyle(R.style.GameActivityNavigationBar, true);
-	    }
-	    if (drawerFragment != null) {
-		drawerFragment.refresh();
-	    }
+	    } 
 	    registerSensors();
 	}
 
