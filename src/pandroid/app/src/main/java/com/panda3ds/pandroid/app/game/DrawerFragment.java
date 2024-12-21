@@ -8,13 +8,16 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.content.pm.ActivityInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import android.content.pm.ActivityInfo;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.graphics.Insets;
 
 import com.google.android.material.navigation.NavigationView;
 import com.panda3ds.pandroid.AlberDriver;
@@ -49,6 +52,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         drawerLayout = view.findViewById(R.id.drawer_layout);
 
         ((NavigationView)view.findViewById(R.id.menu)).setNavigationItemSelectedListener(this);
+        setInsets(((NavigationView)view.findViewById(R.id.menu)));
         refresh();
     }
 
@@ -62,6 +66,29 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_title)).setText(game.getTitle());
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_publisher)).setText(game.getPublisher());
     }
+
+    private void setInsets(NavigationView navigationView) {
+        ViewCompat.setOnApplyWindowInsetsListener(
+            navigationView,
+            new androidx.core.view.OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
+                    Insets cutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+                    int left = 0;
+                    int right = 0;
+                    if (ViewCompat.getLayoutDirection(v) == ViewCompat.LAYOUT_DIRECTION_LTR) {
+                        left = cutInsets.left;
+                    } else {
+                        right = cutInsets.right;
+                    }
+
+                    view.setPadding(left, cutInsets.top, right, 0);
+                    return windowInsets;
+                }
+            }
+        );
+    }
+
 
     @Override
     public void onDetach() {
