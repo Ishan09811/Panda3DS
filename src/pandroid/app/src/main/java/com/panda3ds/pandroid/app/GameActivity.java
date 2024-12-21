@@ -22,11 +22,16 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.graphics.Insets;
 
 import com.panda3ds.pandroid.AlberDriver;
 import com.panda3ds.pandroid.R;
@@ -73,6 +78,17 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 		PandaLayoutController controllerLayout = findViewById(R.id.controller_layout);
 		controllerLayout.initialize();
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Window window = getWindow();
+                    window.setDecorFitsSystemWindows(false);
+
+                    WindowInsetsController insetsController = window.getInsetsController();
+                    if (insetsController != null) {
+                        insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                        insetsController.hide(WindowInsets.Type.systemBars());
+                    }
+		}
+
 		((CheckBox) findViewById(R.id.hide_screen_controller)).setOnCheckedChangeListener((buttonView, checked) -> {
 			changeOverlayVisibility(checked);
 			GlobalConfig.set(GlobalConfig.KEY_SCREEN_GAMEPAD_VISIBLE, checked);
@@ -90,36 +106,37 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 	}
 
 	private void registerSensors() {
-		SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		Sensor accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		if (accel != null) {
-			sensorManager.registerListener(this, accel, 1);
-		}
-		Sensor gryro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-		if (gryro != null) {
-			sensorManager.registerListener(this, gryro, 1);
-		}
+	    SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+	    Sensor accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	    if (accel != null) {
+		sensorManager.registerListener(this, accel, 1);
+	    }
+	    Sensor gryro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+	    if (gryro != null) {
+		sensorManager.registerListener(this, gryro, 1);
+	    }
 	}
 
 	private void changeOverlayVisibility(boolean visible) {
-		findViewById(R.id.overlay_controller).setVisibility(visible ? View.VISIBLE : View.GONE);
-		findViewById(R.id.overlay_controller).invalidate();
-		findViewById(R.id.overlay_controller).requestLayout();
+	    findViewById(R.id.overlay_controller).setVisibility(visible ? View.VISIBLE : View.GONE);
+	    findViewById(R.id.overlay_controller).invalidate();
+	    findViewById(R.id.overlay_controller).requestLayout();
 	}
 
 	@Override
 	protected void onResume() {
-		super.onResume();
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		InputHandler.reset();
-		InputHandler.setMotionDeadZone(InputMap.getDeadZone());
-		InputHandler.setEventListener(inputListener);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-			getTheme().applyStyle(R.style.GameActivityNavigationBar, true);
-		}
-		registerSensors();
+	    super.onResume();
+	    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+	    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	    getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+	    InputHandler.reset();
+            InputHandler.setMotionDeadZone(InputMap.getDeadZone());
+	    InputHandler.setEventListener(inputListener);
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+	        getTheme().applyStyle(R.style.GameActivityNavigationBar, true);
+	    }
+	    registerSensors();
 	}
 
 	private void enablePIP() {
