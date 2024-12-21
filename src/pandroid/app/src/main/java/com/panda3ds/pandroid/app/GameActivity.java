@@ -107,7 +107,7 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 		setInsets(findViewById(R.id.drawer_container));
 	}
 
-	private void setInsets(@NonNull View drawerLayout) {
+	private void setInsets(View drawerLayout) {
             ViewCompat.setOnApplyWindowInsetsListener(
                 drawerLayout,
                 new androidx.core.view.OnApplyWindowInsetsListener() {
