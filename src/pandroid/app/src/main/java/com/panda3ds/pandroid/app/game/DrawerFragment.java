@@ -52,7 +52,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         drawerLayout = view.findViewById(R.id.drawer_layout);
 
         ((NavigationView)view.findViewById(R.id.menu)).setNavigationItemSelectedListener(this);
-        setInsets(((NavigationView)view.findViewById(R.id.menu)));
+        setInsets(view);
         refresh();
     }
 
@@ -65,12 +65,12 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
         }
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_title)).setText(game.getTitle());
         ((AppCompatTextView)drawerLayout.findViewById(R.id.game_publisher)).setText(game.getPublisher());
-        setInsets(((NavigationView)drawerLayout.findViewById(R.id.menu)));
+        setInsets(drawerLayout);
     }
 
-    private void setInsets(@NonNull NavigationView navigationView) {
+    private void setInsets(@NonNull View drawerLayout) {
         ViewCompat.setOnApplyWindowInsetsListener(
-            navigationView,
+            drawerLayout,
             new androidx.core.view.OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat windowInsets) {
