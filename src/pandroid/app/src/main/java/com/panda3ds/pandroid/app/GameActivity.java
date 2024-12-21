@@ -163,6 +163,12 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 	    registerSensors();
 	}
 
+	@Override
+        public void onConfigurationChanged(Configuration newConfig) {
+            super.onConfigurationChanged(newConfig);
+	    setInsets(findViewById(R.id.drawer_fragment));
+	}
+
 	private void enablePIP() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
