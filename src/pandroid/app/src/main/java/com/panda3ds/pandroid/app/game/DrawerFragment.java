@@ -76,7 +76,7 @@ public class DrawerFragment extends Fragment implements DrawerLayout.DrawerListe
                     Insets cutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
                     int left = 0;
                     int right = 0;
-                    if (ViewCompat.getLayoutDirection(v) == ViewCompat.LAYOUT_DIRECTION_LTR) {
+                    if (ViewCompat.getLayoutDirection(view) == ViewCompat.LAYOUT_DIRECTION_LTR) {
                         left = cutInsets.left;
                     } else {
                         right = cutInsets.right;
