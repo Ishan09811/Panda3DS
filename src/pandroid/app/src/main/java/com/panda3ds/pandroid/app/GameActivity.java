@@ -137,6 +137,9 @@ public class GameActivity extends BaseActivity implements EmulatorCallback, Sens
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
 	        getTheme().applyStyle(R.style.GameActivityNavigationBar, true);
 	    }
+	    if (drawerFragment != null) {
+		drawerFragment.refresh();
+	    }
 	    registerSensors();
 	}
 
