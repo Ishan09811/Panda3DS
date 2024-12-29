@@ -23,6 +23,13 @@ jobs:
     - name: Fetch submodules
       run: git submodule update --init --recursive
 
+    - name: Check if code has changed
+      id: code_changed
+      run: |
+        # Check for changes in .cpp, .h, .hpp files or submodules
+        git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "Code changed" >> $GITHUB_ENV
+        git diff --exit-code --quiet -- submodule || echo "Submodules changed" >> $GITHUB_ENV
+
     - name: Set up gradle caches
       uses: actions/cache@v4
       with:
@@ -32,6 +39,14 @@ jobs:
         key: ${{ runner.os }}-pandroid-x86_64-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-pandroid-x86_64-
+
+    - name: Cache libAlber.so (x86_64)
+      uses: actions/cache@v4
+      with:
+        path: ./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so
+        key: ${{ runner.os }}-pandroid-x86_64-libAlber-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-pandroid-x86_64-libAlber-
 
     - name: Setup Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.0
@@ -53,6 +68,13 @@ jobs:
       run: |
         # Apply patch for GLES compatibility
         git apply ./.github/gles.patch
+
+        # Skip using the cache if code has changed
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]]; then
+          echo "Code changed, rebuilding from scratch..."
+          rm -f ./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so
+        fi
+
         # Build the project with CMake
         cmake --build ${{github.workspace}}/build --config ${{ env.BUILD_TYPE }}
 
@@ -82,11 +104,15 @@ jobs:
 
     steps:
     - name: Set BUILD_TYPE variable
-      run: echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
+      run: | 
+          echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
+          git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "Code changed" >> $GITHUB_ENV
+          git diff --exit-code --quiet -- submodule || echo "Submodules changed" >> $GITHUB_ENV
 
     - uses: actions/checkout@v4
     - name: Fetch submodules
       run: git submodule update --init --recursive
+        
 
     - name: Set up gradle caches
       uses: actions/cache@v4
@@ -94,6 +120,7 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
+          ~/src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so
         key: ${{ runner.os }}-pandroid-arm64-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-pandroid-arm64-
@@ -112,19 +139,31 @@ jobs:
         java-version: '17'
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DBUILD_HYDRA_CORE=1 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DENABLE_VULKAN=0 -DENABLE_USER_BUILD=ON -DCMAKE_CXX_FLAGS="-march=armv8-a+crypto"
+      run: |
+        if [[ "${{ env.CODE_CHANGED }}" != "true" ]]; then
+          echo "Code changed, rebuilding from scratch..."
+          cmake -B ${{github.workspace}}/build -DBUILD_HYDRA_CORE=1 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DENABLE_VULKAN=0 -DENABLE_USER_BUILD=ON -DCMAKE_CXX_FLAGS="-march=armv8-a+crypto"
+        fi
 
     - name: Build
       run: |
-        # Apply patch for GLES compatibility
-        git apply ./.github/gles.patch
-        # Build the project with CMake
-        cmake --build ${{github.workspace}}/build --config ${{ env.BUILD_TYPE }}
+        # Skip using the cache if code has changed
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]]; then
+          rm -f ./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so
+        fi
 
-        # Strip the generated library and move it to the appropriate location
-        ${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded ./build/libAlber.so
-        mv ./build/libAlber.so ./src/pandroid/app/src/main/jniLibs/arm64-v8a/
-        
+        if [[ "${{ env.CODE_CHANGED }}" != "true" ]]; then
+          # Apply patch for GLES compatibility
+          git apply ./.github/gles.patch
+
+          # Build the project with CMake
+          cmake --build ${{github.workspace}}/build --config ${{ env.BUILD_TYPE }}
+
+          # Strip the generated library and move it to the appropriate location
+          ${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded ./build/libAlber.so
+          mv ./build/libAlber.so ./src/pandroid/app/src/main/jniLibs/arm64-v8a/
+        fi
+
         # Build the Android app with Gradle
         cd src/pandroid
         ./gradlew assemble${{ env.BUILD_TYPE }}
@@ -137,3 +176,4 @@ jobs:
         name: Android APKs (arm64)
         path: |
           ./src/pandroid/app/build/outputs/apk/${{ env.BUILD_TYPE }}/app-${{ env.BUILD_TYPE }}.apk
+          
