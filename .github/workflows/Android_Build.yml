@@ -16,15 +16,18 @@ jobs:
           - release
 
     steps:
+    - uses: actions/checkout@v4
+    - name: Fetch submodules
+      run: | 
+        if [[ "${{ env.CODE_CHANGED }}" != "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+          git submodule update --init --recursive
+        fi
+
     - name: Set BUILD_TYPE variable
       run: | 
         echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
         git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "CODE_CHANGED=true" >> $GITHUB_ENV
         git diff --exit-code --quiet -- submodule || echo "CODE_CHANGED=true" >> $GITHUB_ENV
-
-    - uses: actions/checkout@v4
-    - name: Fetch submodules
-      run: git submodule update --init --recursive
 
     - name: Set up gradle caches
       uses: actions/cache@v4
@@ -96,16 +99,18 @@ jobs:
           - release
 
     steps:
+    - uses: actions/checkout@v4
+    - name: Fetch submodules
+      run: |
+        if [[ "${{ env.CODE_CHANGED }}" != "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+          git submodule update --init --recursive
+        fi
+
     - name: Set BUILD_TYPE variable
       run: | 
           echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
           git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "CODE_CHANGED=true" >> $GITHUB_ENV
-          git diff --exit-code --quiet -- submodule || echo "CODE_CHANGED=true" >> $GITHUB_ENV
-
-    - uses: actions/checkout@v4
-    - name: Fetch submodules
-      run: git submodule update --init --recursive
-        
+          git diff --exit-code --quiet -- submodule || echo "CODE_CHANGED=true" >> $GITHUB_ENV       
 
     - name: Set up gradle caches
       uses: actions/cache@v4
