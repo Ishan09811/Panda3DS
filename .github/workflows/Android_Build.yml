@@ -26,6 +26,7 @@ jobs:
     - name: Set BUILD_TYPE variable
       run: | 
         echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
+        echo "CODE_CHANGED=false" >> $GITHUB_ENV
         git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "CODE_CHANGED=true" >> $GITHUB_ENV
         git diff --exit-code --quiet -- submodule || echo "CODE_CHANGED=true" >> $GITHUB_ENV
 
@@ -56,7 +57,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
           echo "Code changed, rebuilding from scratch..."
           cmake -B ${{github.workspace}}/build -DBUILD_HYDRA_CORE=1 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake -DANDROID_ABI=x86_64 -DENABLE_VULKAN=0 -DENABLE_USER_BUILD=ON
         fi
@@ -64,11 +65,11 @@ jobs:
     - name: Build
       run: |
         # Skip using the cache if code has changed
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
           rm -f ./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so
         fi
 
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
           # Apply patch for GLES compatibility
           git apply ./.github/gles.patch
           # Build the project with CMake
@@ -103,13 +104,14 @@ jobs:
     - uses: actions/checkout@v4
     - name: Fetch submodules
       run: |
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
           git submodule update --init --recursive
         fi
 
     - name: Set BUILD_TYPE variable
       run: | 
           echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
+          echo "CODE_CHANGED=false" >> $GITHUB_ENV
           git diff --exit-code --quiet -- '*.cpp' '*.h' '*.hpp' || echo "CODE_CHANGED=true" >> $GITHUB_ENV
           git diff --exit-code --quiet -- submodule || echo "CODE_CHANGED=true" >> $GITHUB_ENV       
 
@@ -140,7 +142,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
           echo "Code changed, rebuilding from scratch..."
           cmake -B ${{github.workspace}}/build -DBUILD_HYDRA_CORE=1 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DENABLE_VULKAN=0 -DENABLE_USER_BUILD=ON -DCMAKE_CXX_FLAGS="-march=armv8-a+crypto"
         fi
@@ -148,11 +150,11 @@ jobs:
     - name: Build
       run: |
         # Skip using the cache if code has changed
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
           rm -f ./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so
         fi
 
-        if [[ "$CODE_CHANGED" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
           # Apply patch for GLES compatibility
           git apply ./.github/gles.patch
 
