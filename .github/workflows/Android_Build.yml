@@ -38,6 +38,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pandroid-x86_64-
 
+    - name: check libAlber exist
+      run: |
+        if [ -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+          echo "ALBER_EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "ALBER_EXISTS=false" >> $GITHUB_ENV
+        fi
+
     - name: Setup Vulkan SDK
       if: ${{ env.CODE_CHANGED == 'true' || env.ALBER_EXISTS == 'false' }}
       uses: humbletim/setup-vulkan-sdk@v1.2.0
@@ -126,6 +134,7 @@ jobs:
           echo "ALBER_EXISTS=true" >> $GITHUB_ENV
         else
           echo "ALBER_EXISTS=false" >> $GITHUB_ENV
+        fi
 
     - name: Setup Vulkan SDK
       if: ${{ env.CODE_CHANGED == 'true' || env.ALBER_EXISTS == 'false' }}
