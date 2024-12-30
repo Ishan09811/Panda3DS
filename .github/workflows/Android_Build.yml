@@ -70,7 +70,7 @@ jobs:
     - name: Build
       run: |
         # Skip using the cache if code has changed
-        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]]; then
           rm -f ./src/pandroid/app/src/main/jniLibs/x86_64/libAlber.so
         fi
 
@@ -160,7 +160,7 @@ jobs:
     - name: Build
       run: |
         # Skip using the cache if code has changed
-        if [[ "${{ env.CODE_CHANGED }}" == "true" ]] || [ ! -f "./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so" ]; then
+        if [[ "${{ env.CODE_CHANGED }}" == "true" ]]; then
           rm -f ./src/pandroid/app/src/main/jniLibs/arm64-v8a/libAlber.so
         fi
 
