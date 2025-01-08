@@ -363,7 +363,7 @@ set(APPLET_SOURCE_FILES src/core/applets/applet.cpp src/core/applets/mii_selecto
                         src/core/applets/error_applet.cpp
 )
 set(AUDIO_SOURCE_FILES src/core/audio/dsp_core.cpp src/core/audio/null_core.cpp src/core/audio/teakra_core.cpp
-                       src/core/audio/miniaudio_device.cpp src/core/audio/hle_core.cpp src/core/audio/aac_decoder.cpp
+                       src/core/audio/miniaudio_device.cpp src/core/audio/oboe_audio_device.cpp src/core/audio/hle_core.cpp src/core/audio/aac_decoder.cpp
                        src/core/audio/audio_interpolation.cpp
 )
 set(RENDERER_SW_SOURCE_FILES src/core/renderer_sw/renderer_sw.cpp)
@@ -400,7 +400,7 @@ set(HEADER_FILES include/emulator.hpp include/helpers.hpp include/termcolor.hpp 
                  include/fs/archive_system_save_data.hpp include/lua_manager.hpp include/memory_mapped_file.hpp include/hydra_icon.hpp
                  include/PICA/dynapica/shader_rec_emitter_arm64.hpp include/scheduler.hpp include/applets/error_applet.hpp include/PICA/shader_gen.hpp
                  include/audio/dsp_core.hpp include/audio/null_core.hpp include/audio/teakra_core.hpp
-                 include/audio/miniaudio_device.hpp include/ring_buffer.hpp include/bitfield.hpp include/audio/dsp_shared_mem.hpp
+                 include/audio/miniaudio_device.hpp include/audio/oboe_audio_device.hpp include/ring_buffer.hpp include/bitfield.hpp include/audio/dsp_shared_mem.hpp
                  include/audio/hle_core.hpp include/capstone.hpp include/audio/aac.hpp include/PICA/pica_frag_config.hpp
                  include/PICA/pica_frag_uniforms.hpp include/PICA/shader_gen_types.hpp include/PICA/shader_decompiler.hpp
                  include/PICA/pica_vert_config.hpp include/sdl_sensors.hpp include/PICA/draw_acceleration.hpp include/renderdoc.hpp
