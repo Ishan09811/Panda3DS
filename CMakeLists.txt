@@ -195,8 +195,8 @@ if(ANDROID)
 endif()
 
 if(ANDROID)
-   add_subdirectory("third_party/oboe")
-   include_directories(SYSTEM "third_party/oboe/include")
+   add_subdirectory(third_party/oboe)
+   include_directories(third_party/oboe/include)
 endif()
 
 add_subdirectory(third_party/glad)
