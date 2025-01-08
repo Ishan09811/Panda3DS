@@ -197,6 +197,7 @@ endif()
 if(ANDROID)
    add_subdirectory(third_party/oboe)
    include_directories(third_party/oboe/include)
+   target_link_libraries(AlberCore PRIVATE oboe)
 endif()
 
 add_subdirectory(third_party/glad)
