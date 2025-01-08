@@ -8,7 +8,11 @@
 
 #include "PICA/gpu.hpp"
 #include "audio/dsp_core.hpp"
+#ifdef __ANDROID__
+#include "audio/oboe_audio_device.hpp"
+#else
 #include "audio/miniaudio_device.hpp"
+#endif
 #include "cheats.hpp"
 #include "config.hpp"
 #include "cpu.hpp"
@@ -48,7 +52,11 @@ class Emulator {
 	Scheduler scheduler;
 
 	Crypto::AESEngine aesEngine;
-	MiniAudioDevice audioDevice;
+	#ifdef __ANDROID__
+            OboeAudioDevice audioDevice;
+        #else
+            MiniAudioDevice audioDevice;
+        #endif
 	Cheats cheats;
 
   public:
