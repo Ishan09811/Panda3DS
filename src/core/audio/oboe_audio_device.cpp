@@ -12,7 +12,7 @@ void OboeAudioDevice::init(Samples& samples, bool safe) {
     running = false;
 
     oboe::AudioStreamBuilder builder;
-    builder->setFormat(oboe::AudioFormat::I16)
+    builder.setFormat(oboe::AudioFormat::I16)
            ->setChannelCount(channelCount)
            ->setSampleRate(sampleRate)
            ->setCallback(this)
