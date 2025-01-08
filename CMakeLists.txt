@@ -194,6 +194,11 @@ if(ANDROID)
     target_link_libraries(AlberCore PRIVATE EGL log)
 endif()
 
+if(ANDROID)
+   add_subdirectory("third_party/oboe")
+   include_directories(SYSTEM "third_party/oboe/include")
+endif()
+
 add_subdirectory(third_party/glad)
 
 # Cryptopp doesn't support compiling under clang-cl, so we have to include it as a prebuilt MSVC static library
