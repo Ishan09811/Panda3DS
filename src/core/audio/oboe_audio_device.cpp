@@ -12,13 +12,13 @@ void OboeAudioDevice::init(Samples& samples, bool safe) {
     running = false;
 
     oboe::AudioStreamBuilder builder;
-    builder.setFormat(oboe::AudioFormat::I16)
-           .setChannelCount(channelCount)
-           .setSampleRate(sampleRate)
-           .setCallback(this)
-           .setPerformanceMode(oboe::PerformanceMode::LowLatency)
-           .setUsage(oboe::Usage::Game)
-           .setSharingMode(oboe::SharingMode::Exclusive);
+    builder->setFormat(oboe::AudioFormat::I16)
+           ->setChannelCount(channelCount)
+           ->setSampleRate(sampleRate)
+           ->setCallback(this)
+           ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
+           ->setUsage(oboe::Usage::Game)
+           ->setSharingMode(oboe::SharingMode::Exclusive);
 
     oboe::Result result = builder.openStream(&audioStream);
     if (result != oboe::Result::OK) {
