@@ -1,4 +1,4 @@
-#include "audio/miniaudio_device.hpp"
+#include "audio/oboe_audio_device.hpp"
 
 OboeAudioDevice::OboeAudioDevice(const AudioDeviceConfig& audioSettings)
     : audioSettings(audioSettings) {}
