@@ -13,6 +13,7 @@ void OboeAudioDevice::init(Samples& samples, bool safe) {
 
     oboe::AudioStreamBuilder builder;
     builder.setFormat(oboe::AudioFormat::I16)
+           ->setAudioApi(oboe::AudioApi::OpenSLES)
            ->setChannelCount(channelCount)
            ->setSampleRate(sampleRate)
            ->setCallback(this)
